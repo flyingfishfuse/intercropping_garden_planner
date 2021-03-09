@@ -1,6 +1,5 @@
 from plants import *
-from uni_vars import *
-
+from std_imports import *
 import numpy as np
 from Tkinter import *
 import matplotlib.pyplot as plt

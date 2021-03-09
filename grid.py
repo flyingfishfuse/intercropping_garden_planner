@@ -1,7 +1,24 @@
 import sys
 from tkinter import *
 from tkinter import filedialog
-from uni_vars import *
+
+
+# Maximum and default grid size
+MAX_N, DEFAULT_N = 26, 10
+# The "default" colour for an unfilled grid cell
+UNFILLED = '#fff'
+
+# The colour palette
+colours = (UNFILLED, 'red', 'green', 'blue', 'cyan', 'orange', 'yellow',
+               'magenta', 'brown', 'black')
+ncolours = len(colours)
+
+from plants import *
+
+plants_list = IntercroppingRelationships()
+for each in plants_list.plant_info:
+
+
 
 # TKinter code based on https://github.com/scipython/colouring-grid
 # A simple colouring grid app, with load/save functionality.
