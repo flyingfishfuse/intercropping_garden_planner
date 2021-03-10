@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 ################################################################################
-##                    Code to model plants for garden placment                ##
+##      boilerplates ARE US      ##
 ################################################################################
 # Copyright (c) 2020 Adam Galindo                                             ##
 #                                                                             ##
@@ -34,24 +34,25 @@ __email__     = 'null@null.com'
 __version__ = '0.1A'
 __license__ = 'GPLv3'
 
-from plants import *
-from std_imports import *
-import numpy as np
-from Tkinter import *
-import matplotlib.pyplot as plt
+from bs4 import BeautifulSoup
+import requests
+import os
+import pandas
+from std_imports import greenprint,redprint,blueprint
 
-from grid import *
+fulltable = {}
+sections_to_grab = ['Vegetables', 'Fruit', 'Herbs', 'Flowers', 'Other']
+thing_to_get = 'https://en.wikipedia.org/wiki/List_of_companion_plants'
+wikipage1 = requests.get(thing_to_get)
 
-class Plant:
-	def __init__(self, cls, plant_data : dict):
-		cls.plant_data     = plant_data
-		self.goodneighbors = list
-		for key, value in cls.plant_data.items():
-			self.goodneighbors.append(value)
-		#for key,value in cls.plant_data.items():
-		#	setattr(self, key, value)
-		#	self.__name__ = key
-	
-	def __repr__(self):
-		print(" I AM A : {}".format(self.__name__))
-		#print(self.__name__) 
+class ScrapeWikipediaTableForData:
+    def __init__(self,url):
+        self.dataframes  = pandas.read_html(url)
+        self.full_entry  = {} 
+        for dataframe in self.dataframes:
+            self.full_entry.update({dataframe.index:dataframe.to_sql})
+
+
+
+
+tables_of_plant_data = ScrapeWikipediaTableForData(thing_to_get)

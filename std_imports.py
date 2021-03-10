@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 ################################################################################
-##   Page Mirroring script utilizing python/Wget in a unix-like environment   ##
+##      Basic functions for logging/terminal info display/error handling      ##
 ################################################################################
 # Copyright (c) 2020 Adam Galindo                                             ##
 #                                                                             ##
@@ -26,6 +26,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 ################################################################################
+
 
 
 ########################################
@@ -78,3 +79,7 @@ info_message		= lambda message: logger.info(greenprint(message))
 warning_message 	= lambda message: logger.warning(yellow_bold_print(message)) 
 error_message		= lambda message: logger.error(redprint(message)) 
 critical_message 	= lambda message: logger.critical(yellow_bold_print(message))
+
+###############################################
+## BeautifulSoup4 
+#divs = soupyresults.find(lambda tag:  tag.name=='div' and tag.has_key('id') and tag['id'] == divname)
