@@ -207,4 +207,4 @@ def dump_gardens():
         print(makered("------------END DATABASE DUMP------------"))
 
 
-plant_data_lookup = ScrapeWikipediaTableForData(thing_to_get,plants_attributes_dict)
+plant_data_lookup = ScrapeWikipediaTableForData(thing_to_get,plants_attributes_dict,sections_to_grab)

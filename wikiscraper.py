@@ -26,6 +26,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 ################################################################################
+import pandas
 
 if __name__ == '__main__':
     from database_stuff import Plants,add_to_db
@@ -47,15 +48,17 @@ if __name__ == '__main__':
     }
 
 class ScrapeWikipediaTableForData:
-    def __init__(self,url,sqlalchemy_mapping:dict):
+    def __init__(self,url,sqlalchemy_mapping:dict, sections_tograb):
         self.dataframes  = pandas.read_html(url)
         self.attributes_dict  = {}
+        self.sections_to_grab = sections_tograb
         self.dothethingjulie()
 
     def dothethingjulie(self):
         for dataframe in self.dataframes:
             # isolate each attribute from dataframe
-            if dataframe.columns[0][0] in sections_to_grab:
+            if dataframe.columns[0][0] in self.sections_to_grab:
+                print(dataframe.iloc[0])
                 self.attributes_dict.update(\
                     name            = dataframe.iloc[0],
                     scientific_name = dataframe.iloc[1],
@@ -84,5 +87,5 @@ class ScrapeWikipediaTableForData:
 # functions have been declared 
 # this file is also a standalone application 
 if __name__ == '__main__':
-    plant_data_lookup = ScrapeWikipediaTableForData(thing_to_get,attributes_dict)
+    plant_data_lookup = ScrapeWikipediaTableForData(thing_to_get,attributes_dict, sections_to_grab)
     print(plant_data_lookup.attributes_dict)
