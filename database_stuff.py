@@ -90,6 +90,7 @@ class Plants(database.Model):
                                           unique=True, \
                                           autoincrement=True)
     name                               = database.Column(database.String(256))
+    scientific_name                    = database.Column(database.String(256))
     helps                              = database.Column(database.String(256))
     helped_by                          = database.Column(database.String(256))
     bad_for                            = database.Column(database.String(256))
@@ -100,6 +101,7 @@ class Plants(database.Model):
     def __repr__(self):
         info = '''=========================================
 name      : {} 
+scientific name      : {} 
 helps     : {} 
 helped_by : {}
 bad_for   : {}
