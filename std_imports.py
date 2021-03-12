@@ -27,7 +27,7 @@
 # THE SOFTWARE.
 ################################################################################
 
-
+TESTING = True
 
 ########################################
 # Imports for logging and colorization #
@@ -39,7 +39,8 @@ try:
 	from colorama import init
 	init()
 	from colorama import Fore, Back, Style
-	COLORMEQUALIFIED = True
+	if TESTING == True:
+		COLORMEQUALIFIED = True
 except ImportError as derp:
 	print("[-] NO COLOR PRINTING FUNCTIONS AVAILABLE, Install the Colorama Package from pip")
 	COLORMEQUALIFIED = False

@@ -37,3 +37,10 @@ __license__ = 'GPLv3'
 from plants import *
 from std_imports import *
 from grid import *
+
+class Garden():
+    def __new__(cls) -> Any:
+        pass
+    def __init__(self) -> None:
+        self.hemisphere = 
+        pass

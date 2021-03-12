@@ -49,6 +49,11 @@ class IntercroppingRelationships:
         pass
     def __init__(self):
         pass
+    def get_goodneighbors(self, plant_name:str):
+        pass
+    def get_badneighbors(self, plant_name:str):
+        pass
+    
 
 ##################################################
 ## Class prototypes for each plant

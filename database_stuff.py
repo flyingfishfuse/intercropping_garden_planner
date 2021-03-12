@@ -89,6 +89,7 @@ class Plants(database.Model):
                                           primary_key = True, \
                                           unique=True, \
                                           autoincrement=True)
+    name                               = database.Column(database.String(256))
     helps                              = database.Column(database.String(256))
     helped_by                          = database.Column(database.String(256))
     bad_for                            = database.Column(database.String(256))
@@ -105,13 +106,44 @@ bad_for   : {}
 attracts_insects  : {}
 repels_insects    : {}
 notes     : {}
-'''.format(self.helps,
-                        self.helped_by,
-                        self.bad_for,
-                        self.attracts_insects,
-                        self.repels_insects,
-                        self.notes
-                    )
+'''.format(self.name,
+            self.helps,
+            self.helped_by,
+            self.bad_for,
+            self.attracts_insects,
+            self.repels_insects,
+            self.notes
+        )
+
+# representation of a whole garden grid
+#stores the data for the GUI representation
+class Garden(database.Model):
+    __tablename__       = 'Garden'
+    __table_args__      = {'extend_existing': True}
+    id                  = database.Column(database.Integer, \
+                                          index=True, \
+                                          primary_key = True, \
+                                          unique=True, \
+                                          autoincrement=True)
+    name                               = database.Column(database.String(256))
+    hemisphere                         = database.Column(database.String(256))
+    zone                               = database.Column(database.String(256))
+    notes                              = database.Column(database.String(256))
+    grid_data                          = database.Column(database.Text)
+
+    def __repr__(self):
+        info = '''
+=========================================
+name       : {} 
+hemisphere : {}
+zone       : {}
+notes      : {}
+=========================================
+'''.format(self.name,
+            self.hemisphere,
+            self.zone,
+            self.notes
+        )
 
 ##########################
 #  Test/Init DB Commits  #
@@ -148,12 +180,22 @@ def update_db():
         print(derp.with_traceback)
         print(makered("[-] Update_db FAILED"))
 
-def dump_db():
+def dump_plants():
         """
-    Prints database to screen
+    Prints plants database to screen
         """
         print(makered("-------------DUMPING DATABASE------------"))
         records1 = database.session.query(Plants).all()
+        for each in records1:
+            print (each)
+        print(makered("------------END DATABASE DUMP------------"))
+
+def dump_gardens():
+        """
+    Prints garedns database to screen
+        """
+        print(makered("-------------DUMPING DATABASE------------"))
+        records1 = database.session.query(Garden).all()
         for each in records1:
             print (each)
         print(makered("------------END DATABASE DUMP------------"))
