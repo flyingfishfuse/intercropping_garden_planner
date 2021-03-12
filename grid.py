@@ -4,7 +4,10 @@
 ##                    Code to create grid for garden simulation               ##
 ################################################################################
 # Copyright (c) 2020 Adam Galindo                                             ##
-#                                                                             ##
+# TKinter code based on https://github.com/scipython/colouring-grid
+# A simple colouring grid app, with load/save functionality.
+# Christian Hill, August 2018.
+#  (modified extensively to be much more readable)                            ##
 # Permission is hereby granted, free of charge, to any person obtaining a copy##
 # of this software and associated documentation files (the "Software"),to deal##
 # in the Software without restriction, including without limitation the rights##
@@ -34,68 +37,60 @@ from tkinter import filedialog
 from config_info import *
 from database_stuff import Plants, database
 
-# list of plants to present on the selection palette
-plants_list = []
-for each_plant in Plants:
-    plants_list.append(each_plant.name)
-
-nplants = len(plants_list)
-
-
-# TKinter code based on https://github.com/scipython/colouring-grid
-# A simple colouring grid app, with load/save functionality.
-# Christian Hill, August 2018.
-
 class GridApp:
     """The main class representing a grid of planted cells."""
-
-    # The plant palette
-    # soon to be the plant pallettettee
-    plants_palette = (UNFILLED, 'red', 'green', 'blue', 'cyan', 'orange', 'yellow',
-               'magenta', 'brown', 'black')
-    num_plants_palette = len(plants_palette)
-
     def __init__(self, 
                  master,
                  grid_size_n,
-                 canvas_width_px=600,
-                 canvas_height_px=600,
-                 pad=5):
+                 canvas_width_px,
+                 canvas_height_px
+                 ):
         """Initialize a grid and the Tk Frame on which it is rendered."""
+        # The plant palette
+        # soon to be the plant pallettettee
+        plants_palette = [UNFILLED]
+        for each_plant in Plants:
+            plants_palette.append(each_plant.name)
+
+        num_plants_palette = len(plants_palette)
 
         # Number of cells in each dimension.
-            
-        # Some dimensions for the App in pixels.
-        self.canvas_width_px  = canvas_width_px
-        self.canvas_height_px = canvas_height_px
-        palette_height        = 40
-
+        self.grid_size_n       = grid_size_n 
+        self.palette_pad_px    = 5
+        self.palette_height_px = 40
+        self.palette_width_px  = palette_height = self.palette_height_px - 2 * self.palette_pad_px
+        self.canvas_px_width   = canvas_width_px
+        self.canvas_px_height  = canvas_height_px
         # Padding stuff: xsize, ysize is the cell size in pixels (without pad).
-        grid_NPAD  = grid_size_n + 1
-        self.pad   = pad
-        xsize      = (canvas_width_px - grid_NPAD*pad) / grid_size_n
-        ysize      = (canvas_height_px - grid_NPAD*pad) / grid_size_n
-        p_pad      = 5
-        p_width    = p_height = palette_height - 2*p_pad
+        self.cell_px_pad       = self.cell_px_width + 1#pixel
+        # cell pixel width with no padding
+        self.cell_px_width     = (self.canvas_px_width - self.cell_px_pad) / self.grid_size_n
+        # cell pixel height no padding
+        self.cell_px_height    = (self.canvas_px_height - self.cell_px_pad) / self.grid_size_n
 
-        # The main frame onto which we draw the App's elements.
         frame = Frame(master)
         frame.pack()
 
-        # The palette for selecting plants_palette.
         self.palette_canvas = Canvas(master, 
                                      width  = self.canvas_width_px,
-                                     height = palette_height
+                                     height = self.palette_height_px
                                     )
         self.palette_canvas.pack()
 
         # Add the plant selection rectangles to the palette canvas.
-        self.palette_rects = []
-        for i in range(self.num_plants_palette):
-            x, y = p_pad * (i+1) + i*p_width, p_pad
-            rect = self.palette_canvas.create_rectangle(x, y,
-                            x+p_width, y+p_height, fill=self.plants_palette[i])
-            self.palette_rects.append(rect)
+        self.palette_plant_boxes = []
+        for plant_num in range(self.num_plants_palette):
+            x = self.palette_pad_px * (plant_num + 1) + plant_num * self.palette_width_px
+            y = self.palette_pad_px
+            rectangle = self.palette_canvas.create_rectangle(x, 
+                                            y,
+                                            x + self.palette_width_px,
+                                            y + self.palette_height_px,
+                                            # change to image and link to action for plant selection 
+                                            # maybe as a stateful thing
+                                            fill = self.plants_palette[plant_num]
+                                        )
+            self.palette_rects.append(rectangle)
         # ics is the index of the currently selected plant.
         self.ics = 0
         self.select_plant(self.ics)
@@ -128,11 +123,11 @@ class GridApp:
             x, y = event.x, event.y
 
             # Did the user click a plant from the palette?
-            if p_pad < y < p_height + p_pad:
+            if self.palette_pad_px < y < p_height + self.palette_pad_px:
                 # Index of the selected palette rectangle (plus padding)
-                ic = x // (p_width + p_pad)
+                ic = x // (p_width + self.palette_pad_px)
                 # x-position with respect to the palette rectangle left edge
-                xp = x - ic*(p_width + p_pad) - p_pad
+                xp = x - ic*(p_width + self.palette_pad_px) - self.palette_pad_px
                 # Is the index valid and the click within the rectangle?
                 if ic < self.num_plants_palette and 0 < xp < p_width:
                     self.select_plant(ic)
