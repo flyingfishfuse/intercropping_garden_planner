@@ -29,27 +29,41 @@
 
 # https://en.wikipedia.org/wiki/List_of_companion_plants
 # https://en.wikipedia.org/wiki/Companion_planting
-
+import pandas
 from sqlalchemy import create_engine
 from sqlalchemy.pool import StaticPool
 from flask_sqlalchemy import SQLAlchemy
 from flask import Flask, render_template, Response, Request ,Config
 
+# TESTING =True
+# set in the std_imports for a global TESTING at top level scope
 from std_imports import *
-
-
+from wikiscraper import ScrapeWikipediaTableForData
 ################################################################################
 ##############                      CONFIG                     #################
 ################################################################################
-TESTING = True
 TEST_DB            = 'sqlite://'
 DATABASE_HOST      = "localhost"
 DATABASE           = "plants_info"
 DATABASE_USER      = "admin"
 SERVER_NAME        = "wat"
 LOCAL_CACHE_FILE   = 'sqlite:///' + DATABASE + DATABASE_HOST + DATABASE_USER + ".db"
+sections_to_grab   = ['Vegetables', 'Fruit', 'Herbs', 'Flowers', 'Other']
+thing_to_get       = 'https://en.wikipedia.org/wiki/List_of_companion_plants'
+plants_attributes_dict = {
+    'name':'',
+    'scientific_name': '',
+    'helps':'',
+    'helped_by':'',
+    'bad_for':'',
+    'attracts_insects':'',
+    'repels_insects':'',
+    'notes':''
+}
 
 class Config(object):
+# TESTING = True
+# set in the std_imports for a global TESTING at top level scope
     if TESTING == True:
         #SQLALCHEMY_DATABASE_URI = TEST_DB
         SQLALCHEMY_DATABASE_URI = LOCAL_CACHE_FILE
@@ -147,16 +161,6 @@ notes      : {}
             self.notes
         )
 
-##########################
-#  Test/Init DB Commits  #
-##########################
-#
-#
-# blah blah blah
-#
-#
-#
-###########################
 
 def add_to_db(thingie):
     """
@@ -168,9 +172,9 @@ def add_to_db(thingie):
     try:
         database.session.add(thingie)
         database.session.commit
-        redprint("=========Database Commit=======")
-        greenprint(thingie)
-        redprint("=========Database Commit=======")
+        #redprint("=========Database Commit=======")
+        #greenprint(thingie)
+        #redprint("=========Database Commit=======")
     except Exception as derp:
         print(derp)
         print(makered("[-] add_to_db() FAILED"))
@@ -201,10 +205,6 @@ def dump_gardens():
         for each in records1:
             print (each)
         print(makered("------------END DATABASE DUMP------------"))
-##########################################
-#Relationships from online tables, currently, requires internet connection
-# on first run. Will distribute with primed DB on release.
-##########################################
 
 
-    
+plant_data_lookup = ScrapeWikipediaTableForData(thing_to_get,plants_attributes_dict)

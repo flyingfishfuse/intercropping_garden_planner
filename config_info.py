@@ -26,22 +26,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 ################################################################################
-"""
-This file contains INSERT STUFF HERE
-This I think is going to be the main file
-"""
-__author__     = 'Adam Galindo'
-__email__     = 'null@null.com'
-__version__ = '0.1A'
-__license__ = 'GPLv3'
 
-from plants import *
-from std_imports import *
-from grid import *
 
-class Garden():
-    def __new__(cls) -> Any:
-        pass
-    def __init__(self) -> None:
-        self.hemisphere = 'north'
-        pass
+# Maximum and default grid size
+MAX_N, DEFAULT_N = 26, 10
+# The "default" plant for an unfilled grid cell
+UNFILLED = '#fff'

@@ -27,6 +27,7 @@
 # THE SOFTWARE.
 ################################################################################
 
+#currently controls color printing functions ONLY
 TESTING = True
 
 ########################################
@@ -57,6 +58,7 @@ greenprint 			= lambda text: print(Fore.GREEN + ' ' +  text + ' ' + \
 redprint 			= lambda text: print(Fore.RED + ' ' +  text + ' ' + \
 	Style.RESET_ALL) if (COLORMEQUALIFIED == True) else print(text)
 # inline colorization for lambdas in a lambda
+# lambing while you lamb?
 makered				= lambda text: Fore.RED + ' ' +  text + ' ' + \
 	Style.RESET_ALL if (COLORMEQUALIFIED == True) else None
 makegreen  			= lambda text: Fore.GREEN + ' ' +  text + ' ' + \

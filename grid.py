@@ -28,18 +28,16 @@
 ################################################################################
 
 import sys
+
 from tkinter import *
 from tkinter import filedialog
+from config_info import *
+from database_stuff import Plants, database
 
-
-# Maximum and default grid size
-MAX_N, DEFAULT_N = 26, 10
-# The "default" plant for an unfilled grid cell
-UNFILLED = '#fff'
-
-plants_list = ()
-plants_list = (UNFILLED, 'red', 'green', 'blue', 'cyan', 'orange', 'yellow',
-               'magenta', 'brown', 'black')
+# list of plants to present on the selection palette
+plants_list = []
+for each_plant in Plants:
+    plants_list.append(each_plant.name)
 
 nplants = len(plants_list)
 
