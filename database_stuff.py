@@ -44,30 +44,22 @@ from std_imports import *
 ################################################################################
 
 TEST_DB            = 'sqlite://'
-DATABASE_HOST      = "localhost"
 DATABASE           = "plants_info"
-DATABASE_USER      = "admin"
-SERVER_NAME        = "wat"
-LOCAL_CACHE_FILE   = 'sqlite:///' + DATABASE + DATABASE_HOST + DATABASE_USER + ".db"
+LOCAL_CACHE_FILE   = 'sqlite:///' + DATABASE + ".db"
 sections_to_grab = ['Vegetables', 'Fruit', 'Herbs', 'Flowers', 'Other']
 thing_to_get = 'https://en.wikipedia.org/wiki/List_of_companion_plants'
 
 class Config(object):
 # TESTING = True
 # set in the std_imports for a global TESTING at top level scope
-    if TESTING == True:
-        SQLALCHEMY_DATABASE_URI = LOCAL_CACHE_FILE
-        SQLALCHEMY_TRACK_MODIFICATIONS = False
-        #engine = create_engine(TEST_DB ,\
-        #    connect_args={"check_same_thread": False},poolclass=StaticPool)
-    elif TESTING == False:
-        SQLALCHEMY_DATABASE_URI = LOCAL_CACHE_FILE
-        SQLALCHEMY_TRACK_MODIFICATIONS = False
+    SQLALCHEMY_DATABASE_URI = LOCAL_CACHE_FILE
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
 try:
     PlantsDatabase = Flask(__name__ )
     PlantsDatabase.config.from_object(Config)
     database = SQLAlchemy(PlantsDatabase)
     database.init_app(PlantsDatabase)
+    engine = create_engine(LOCAL_CACHE_FILE , connect_args={"check_same_thread": False},poolclass=StaticPool)
     if TESTING == True:
         database.metadata.clear()
 except Exception:
@@ -92,7 +84,7 @@ class Plants(database.Model):
     notes                              = database.Column(database.String(256))
 
     def __repr__(self):
-        info = '''=========================================
+        return '''=========================================
 Type      : {}
 name      : {} 
 scientific name      : {} 
@@ -130,7 +122,7 @@ class Garden(database.Model):
     grid_data                          = database.Column(database.Text)
 
     def __repr__(self):
-        info = '''
+        return '''
 =========================================
 name       : {} 
 hemisphere : {}
@@ -144,6 +136,8 @@ notes      : {}
         )
 
 database.create_all()
+database.session.commit()
+
 test_plant = Plants(plant_type      = 'Tree',
                     name            = 'fuck apple',
                     scientific_name = 'fruitus givafuckus',
@@ -161,7 +155,7 @@ test_garden = Garden(name = 'home base',
                     )
 database.session.add(test_plant)
 database.session.add(test_garden)
-database.session.commit
+database.session.commit()
 
 def add_to_db(thingie):
     """
@@ -210,25 +204,28 @@ class ScrapeWikipediaTableForData:
         self.dataframes       = pandas.read_html(self.thing_to_get)
         #self.Veggies_table   = self.dataframes[0]
         #self.box_of_veggies  = self.Veggies_table.iloc[range(0,len(self.Veggies_table.index))]
-        self.dothethingjulie()
-    def dothethingjulie(self):
         for dataframe in self.dataframes:
             #if the dataframe is in the approved list
             if dataframe.columns[0][0] in self.sections_to_grab:
                 #renaming columns for easier use
+                greenprint("[+] scanning {}".format(dataframe.columns[0][0]))
                 dataframe.columns = ['name','scientific_name','helps','helped_by',
                                 'attracts_insects','repels_insects','bad_for','notes']
                 #loop over rows in dataset
                 for row in range(0, len(dataframe.index)):
-                    add_to_db(Plants(
-                        plant_type      = dataframe.columns[0][0],
-                        name            = dataframe.iloc[row][0],
-                        scientific_name = dataframe.iloc[row][1],
-                        helps           = dataframe.iloc[row][2],
-                        helped_by       = dataframe.iloc[row][2],
-                        attracts_insects= dataframe.iloc[row][2],
-                        repels_insects  = dataframe.iloc[row][2],
-                        bad_for         = dataframe.iloc[row][2],
-                        notes           = dataframe.iloc[row][2],
-                        ))
+                    greenprint("[+] processing {} ".format(dataframe.iloc[row][0]))
+                    plant_entry = Plants(plant_type      = dataframe.columns[0][0],
+                                         name            = dataframe.iloc[row][0],
+                                         scientific_name = dataframe.iloc[row][1],
+                                         helps           = dataframe.iloc[row][2],
+                                         helped_by       = dataframe.iloc[row][3],
+                                         attracts_insects= dataframe.iloc[row][4],
+                                         repels_insects  = dataframe.iloc[row][5],
+                                         bad_for         = dataframe.iloc[row][6],
+                                         notes           = dataframe.iloc[row][7],
+                                        )
+                    greenprint("[+] adding {} to database".format(dataframe.iloc[row][0]))
+                    database.session.add(plant_entry)
+                database.session.commit()
+
 plant_data_lookup = ScrapeWikipediaTableForData(sections_to_grab,thing_to_get)
