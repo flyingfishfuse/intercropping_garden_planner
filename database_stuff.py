@@ -38,34 +38,24 @@ from flask import Flask, render_template, Response, Request ,Config
 # TESTING =True
 # set in the std_imports for a global TESTING at top level scope
 from std_imports import *
-from wikiscraper import ScrapeWikipediaTableForData
+
 ################################################################################
 ##############                      CONFIG                     #################
 ################################################################################
+
 TEST_DB            = 'sqlite://'
 DATABASE_HOST      = "localhost"
 DATABASE           = "plants_info"
 DATABASE_USER      = "admin"
 SERVER_NAME        = "wat"
 LOCAL_CACHE_FILE   = 'sqlite:///' + DATABASE + DATABASE_HOST + DATABASE_USER + ".db"
-sections_to_grab   = ['Vegetables', 'Fruit', 'Herbs', 'Flowers', 'Other']
-thing_to_get       = 'https://en.wikipedia.org/wiki/List_of_companion_plants'
-plants_attributes_dict = {
-    'name':'',
-    'scientific_name': '',
-    'helps':'',
-    'helped_by':'',
-    'bad_for':'',
-    'attracts_insects':'',
-    'repels_insects':'',
-    'notes':''
-}
+sections_to_grab = ['Vegetables', 'Fruit', 'Herbs', 'Flowers', 'Other']
+thing_to_get = 'https://en.wikipedia.org/wiki/List_of_companion_plants'
 
 class Config(object):
 # TESTING = True
 # set in the std_imports for a global TESTING at top level scope
     if TESTING == True:
-        #SQLALCHEMY_DATABASE_URI = TEST_DB
         SQLALCHEMY_DATABASE_URI = LOCAL_CACHE_FILE
         SQLALCHEMY_TRACK_MODIFICATIONS = False
         #engine = create_engine(TEST_DB ,\
@@ -73,36 +63,25 @@ class Config(object):
     elif TESTING == False:
         SQLALCHEMY_DATABASE_URI = LOCAL_CACHE_FILE
         SQLALCHEMY_TRACK_MODIFICATIONS = False
-
 try:
     PlantsDatabase = Flask(__name__ )
     PlantsDatabase.config.from_object(Config)
     database = SQLAlchemy(PlantsDatabase)
     database.init_app(PlantsDatabase)
-
     if TESTING == True:
         database.metadata.clear()
-
 except Exception:
     redprint(Exception.with_traceback)
-
-# from stack overflow
-#In the second case when you're just restarting the app I would write a 
-#test to see if the table already exists using the reflect method:
-
-#db.metadata.reflect(engine=engine)
-
-#Where engine is your db connection created using create_engine(), and see 
-#if your tables already exist and only define the class if the table is undefined.
     
 class Plants(database.Model):
-    __tablename__       = 'Plants_Data'
+    __tablename__       = 'Plants'
     __table_args__      = {'extend_existing': True}
     id                  = database.Column(database.Integer, \
                                           index=True, \
                                           primary_key = True, \
                                           unique=True, \
                                           autoincrement=True)
+    plant_type                         = database.Column(database.String(256))                                          
     name                               = database.Column(database.String(256))
     scientific_name                    = database.Column(database.String(256))
     helps                              = database.Column(database.String(256))
@@ -114,6 +93,7 @@ class Plants(database.Model):
 
     def __repr__(self):
         info = '''=========================================
+Type      : {}
 name      : {} 
 scientific name      : {} 
 helps     : {} 
@@ -122,7 +102,9 @@ bad_for   : {}
 attracts_insects  : {}
 repels_insects    : {}
 notes     : {}
-'''.format(self.name,
+'''.format(self.plant_type,
+            self.name,
+            self.scientific_name,    
             self.helps,
             self.helped_by,
             self.bad_for,
@@ -161,13 +143,28 @@ notes      : {}
             self.notes
         )
 
+database.create_all()
+test_plant = Plants(plant_type      = 'Tree',
+                    name            = 'fuck apple',
+                    scientific_name = 'fruitus givafuckus',
+                    helps           = 'thineself',
+                    helped_by       = 'cannabis indica',
+                    attracts_insects= 'ladybugs',
+                    repels_insects  = 'mosquitos',
+                    bad_for         = 'negative vibes',
+                    notes           = 'Grows best in in the sun giving shade'
+                    )
+test_garden = Garden(name = 'home base',
+                     hemisphere = 'south',
+                     zone = '7a',
+                     notes = 'bada-bing bada-boom, big badaboom'
+                    )
+database.session.add(test_plant)
+database.session.add(test_garden)
+database.session.commit
 
 def add_to_db(thingie):
     """
-    Takes SQLAchemy model Objects 
-    For updating changes to Class_model.Attribute using the form:
-        Class_model.Attribute = some_var 
-        add_to_db(some_var)
     """
     try:
         database.session.add(thingie)
@@ -206,5 +203,32 @@ def dump_gardens():
             print (each)
         print(makered("------------END DATABASE DUMP------------"))
 
-
-plant_data_lookup = ScrapeWikipediaTableForData(thing_to_get,plants_attributes_dict,sections_to_grab)
+class ScrapeWikipediaTableForData:
+    def __init__(self,sections_to_grab, thing_to_get):
+        self.sections_to_grab = sections_to_grab
+        self.thing_to_get     = thing_to_get
+        self.dataframes       = pandas.read_html(self.thing_to_get)
+        #self.Veggies_table   = self.dataframes[0]
+        #self.box_of_veggies  = self.Veggies_table.iloc[range(0,len(self.Veggies_table.index))]
+        self.dothethingjulie()
+    def dothethingjulie(self):
+        for dataframe in self.dataframes:
+            #if the dataframe is in the approved list
+            if dataframe.columns[0][0] in self.sections_to_grab:
+                #renaming columns for easier use
+                dataframe.columns = ['name','scientific_name','helps','helped_by',
+                                'attracts_insects','repels_insects','bad_for','notes']
+                #loop over rows in dataset
+                for row in range(0, len(dataframe.index)):
+                    add_to_db(Plants(
+                        plant_type      = dataframe.columns[0][0],
+                        name            = dataframe.iloc[row][0],
+                        scientific_name = dataframe.iloc[row][1],
+                        helps           = dataframe.iloc[row][2],
+                        helped_by       = dataframe.iloc[row][2],
+                        attracts_insects= dataframe.iloc[row][2],
+                        repels_insects  = dataframe.iloc[row][2],
+                        bad_for         = dataframe.iloc[row][2],
+                        notes           = dataframe.iloc[row][2],
+                        ))
+plant_data_lookup = ScrapeWikipediaTableForData(sections_to_grab,thing_to_get)
