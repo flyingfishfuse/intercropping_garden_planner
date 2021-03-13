@@ -58,17 +58,25 @@ class ScrapeWikipediaTableForData:
         for dataframe in self.dataframes:
             # isolate each attribute from dataframe
             if dataframe.columns[0][0] in self.sections_to_grab:
-                print(dataframe.iloc[0])
-                self.attributes_dict.update(\
-                    name            = dataframe.iloc[0],
-                    scientific_name = dataframe.iloc[1],
-                    helps           = dataframe.iloc[2],
-                    helped_by       = dataframe.iloc[3],
-                    attracts_insects= dataframe.iloc[4],
-                    repels_insects  = dataframe.iloc[5],
-                    bad_for         = dataframe.iloc[6],
-                    notes           = dataframe.iloc[7]
-                )
+                #iloc[x] is an entire row entry
+                # access each column by using :
+                # iloc[x][y] where y = individual column in that row
+
+                for row in dataframe.iloc[range(0,len(dataframe.index))]:
+                    self.attributes_dict.update(\
+                        # HEY LISTEN!
+                        plant_type      = row[0], # HEY! 
+                        # SET THIS TO THE SECTION ITS IN!
+                        # THANK YOU
+                        name            = row[0],
+                        scientific_name = row[1],
+                        helps           = row[2],
+                        helped_by       = row[3],
+                        attracts_insects= row[4],
+                        repels_insects  = row[5],
+                        bad_for         = row[6],
+                        notes           = row[7]
+                    )
         self.juliedothething()
     def juliedothething(self):
         NewPlant = Plants(
