@@ -49,11 +49,17 @@ if __name__ == '__main__':
 
 # FUCK IT ALL
 # i was trying to be abstract, apparently I have to be...
-# DIRECT
+# IMPLICIT
 class ScrapeWikipediaTableForData:
     def __init__(self,url,sqlalchemy_mapping:dict, sections_tograb):
-        self.dataframes  = pandas.read_html(url)
-        self.attributes_dict  = {}
+        self.dataframes    = pandas.read_html(url)
+        # recursion breaks in a wierd place
+        self.veggies_dict  = attributes_dict
+        self.fruits_dict   = attributes_dict
+        self.herbs_dict    = attributes_dict
+        self.flowers_dict  = attributes_dict
+        self.other_dict    = attributes_dict
+
         self.sections_to_grab = sections_tograb
         self.dothethingjulie()
 
@@ -65,22 +71,26 @@ class ScrapeWikipediaTableForData:
         Flowers = self.dataframes[3]
         Other   = self.dataframes[4]
         
-        wanted_dataframes = [ Veggies, Fruit, Herbs, Flowers, Other]
-        for section in wanted_dataframes:
-            self.attributes_dict.update(\
+        # fuck even this breaks
+        #wanted_dataframes = [ Veggies, Fruit, Herbs, Flowers, Other]
+        #for whatever in wanted_dataframes:
+
+        # veggies has 42 rows right now on wikipedia
+        #for veggie_entry in Veggies.iloc[range(0,len(Veggies.index))]
+        #self.veggies_dict.update(\
             # HEY LISTEN!
-                plant_type      = row[0], # HEY! 
+                #plant_type      = row[0], # HEY! 
                 # SET THIS TO THE SECTION ITS IN!
                 # THANK YOU
-                name            = row[0],
-                scientific_name = row[1],
-                helps           = row[2],
-                helped_by       = row[3],
-                attracts_insects= row[4],
-                repels_insects  = row[5],
-                bad_for         = row[6],
-                notes           = row[7]
-            )
+                #name            = Veggies.iloc[0][0],
+                #scientific_name = row[1],
+                #helps           = row[2],
+                #helped_by       = row[3],
+                #attracts_insects= row[4],
+                #repels_insects  = row[5],
+                #bad_for         = row[6],
+                #notes           = row[7]
+            #)
         self.juliedothething()
         #for dataframe in self.dataframes:
             # isolate each attribute from dataframe
