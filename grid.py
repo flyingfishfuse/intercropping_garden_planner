@@ -45,11 +45,13 @@ class GridApp:
     """The main class representing a grid of planted cells."""
     def __init__(self, 
                  master,
-                 grid_size_n = 30,
-                 canvas_width_px = 1024,
+                 grid_size_n      = 30,
+                 canvas_width_px  = 1024,
                  canvas_height_px = 1024
-                 ):
+                ):
         
+        self.master = master
+
         # The plant palette
         # soon to be the plant pallettettee
         self.plants_palette = [UNFILLED]
@@ -57,14 +59,22 @@ class GridApp:
             self.plants_palette.append(each_plant.name)
         self.num_plants_palette = len(self.plants_palette)
 
-    def setup_gui(self, canvas_width_px: int, canvas_height_px: int, grid_size_n: int):
+        self.setup_gui(self.canvas_px_width,
+                        self.canvas_px_height,
+                        self.grid_size_n
+                    )
+
+    def setup_gui(self, canvas_width_px : int, 
+                        canvas_height_px: int, 
+                        grid_size_n     : int
+                    ):
         """
         Initialize a grid and the Tk Frame on which it is rendered.
         Modified to be non-monolithic
         """
         # Number of cells in each dimension.
         self.grid_size_n       = grid_size_n 
-        self.pad_px    = 5
+        self.pad_px            = 5
         self.palette_height_px = 40
         #palette is as wide as the main canvas minus a pad on either side
         self.palette_width_px  = self.canvas_px_width - 2 * self.palette_pad_px
@@ -77,10 +87,10 @@ class GridApp:
         # cell pixel height no padding
         self.cell_px_height    = (self.canvas_px_height - self.cell_px_pad) / self.grid_size_n
 
-        frame = Frame(master)
+        frame = Frame(self.master)
         frame.pack()
 
-        self.palette_canvas = Canvas(master, 
+        self.palette_canvas = Canvas(self.master, 
                                      width  = self.canvas_width_px,
                                      height = self.palette_height_px
                                     )
@@ -105,7 +115,7 @@ class GridApp:
         self.select_plant(self.selected_plant_index)
 
         # The canvas onto which the grid is drawn.
-        self.canvasframe = Canvas(master, 
+        self.canvasframe = Canvas(self.master, 
                                   width=self.canvas_width_px, 
                                   height=self.canvas_width_px
                                   )
@@ -118,15 +128,15 @@ class GridApp:
             for x_axis_index in range(grid_size_n):
                 xpad  = self.pad_px * (x_axis_index+1)
                 ypad  = self.pad_px * (y_axis_index+1) 
-                x1    = xpad + x_axis_index * self.self.cell_px_width
-                y1    = ypad + y_axis_index * self.self.cell_px_height
+                x1    = xpad + x_axis_index * self.cell_px_width
+                y1    = ypad + y_axis_index * self.cell_px_height
                 x2    = x1 + self.cell_px_width ,
                 y2    = y1 + self.cell_px_height ,
-                garden_cell = self.w.create_rectangle(x1, y1, x2, y2, fill = UNFILLED)
+                garden_cell = self.canvasframe.create_rectangle(x1, y1, x2, y2, fill = UNFILLED)
                 self.cells.append(garden_cell)
 
         # Load and save image buttons
-        button_load = Button(frame, 
+        button_load = Button(frame,
                         text='open', 
                         command=self.load_image)
         button_load.pack(side=RIGHT, 
@@ -145,7 +155,7 @@ class GridApp:
         # plot and have it auto fill in the rest after you put preferred
         # plants in preferred locations.
         button_autofill = Button(frame, 
-                        text='save', 
+                        text='make_garden_magic.exe', 
                         command=self.autofill_grid)
         button_autofill.pack(side=RIGHT, 
                         padx=self.pad_px, 
@@ -157,18 +167,21 @@ class GridApp:
         button_clear.pack(side=LEFT, 
                         padx=self.pad_px, 
                         pady=self.pad_px)
+    
+        def autofill_grid(event):
+            pass
 
         def palette_click_callback(event):
             """Function called when someone clicks on the palette canvas."""
-            x = event.x
-            y = event.y
+            click_loc_x = event.x
+            click_loc_y = event.y
 
             # Did the user click a plant from the palette?
-            if self.palette_pad_px < y < self.palette_height_px + self.palette_pad_px:
+            if self.palette_pad_px < click_loc_y < self.palette_height_px + self.palette_pad_px:
                 # Index of the selected palette rectangle (plus padding)
-                palette_cell_selected = x // (self.palette_width_px + self.palette_pad_px)
-                # x-position with respect to the palette rectangle left edge
-                xp = x - palette_cell_selected*(self.palette_width_px + self.palette_pad_px) - self.palette_pad_px
+                palette_cell_selected = click_loc_x // (self.palette_width_px + self.palette_pad_px)
+                # click_loc_x-position with respect to the palette rectangle left edge
+                xp = click_loc_x - palette_cell_selected*(self.palette_width_px + self.palette_pad_px) - self.palette_pad_px
                 # Is the index valid and the click within the rectangle?
                 if palette_cell_selected < self.num_plants_palette and 0 < xp < self.palette_width_px:
                     self.select_plant(palette_cell_selected)
@@ -178,20 +191,20 @@ class GridApp:
 
         def w_click_callback(event):
             """Function called when someone clicks on the grid canvas."""
-            x, y = event.x, event.y
+            click_loc_x, click_loc_y = event.x, event.y
 
             # Did the user click a cell in the grid?
             # Indexes into the grid of cells (including padding)
-            x_axis_index = int(x // (self.cell_px_width  + self.pad_px))
-            y_axis_index = int(y // (self.cell_px_height + self.pad_px))
-            xc = x - x_axis_index*(self.cell_px_width  + self.pad_px) - self.pad_px
-            yc = y - y_axis_index*(self.cell_px_height + self.pad_px) - self.pad_px
+            x_axis_index = int(click_loc_x // (self.cell_px_width  + self.pad_px))
+            y_axis_index = int(click_loc_y // (self.cell_px_height + self.pad_px))
+            xc = click_loc_x - x_axis_index*(self.cell_px_width  + self.pad_px) - self.pad_px
+            yc = click_loc_y - y_axis_index*(self.cell_px_height + self.pad_px) - self.pad_px
             if x_axis_index < grid_size_n and y_axis_index < grid_size_n and 0 < xc < self.cell_px_width  and 0 < yc < self.cell_px_height:
                 i = y_axis_index*grid_size_n+x_axis_index
-                self.w.itemconfig(self.cells[i], fill=self.plants_palette[self.selected_plant_index])
+                self.canvasframe.itemconfig(self.cells[i], fill=self.plants_palette[self.selected_plant_index])
         # Bind the grid click callback function to the left mouse button
         # press event on the grid canvas.
-        self.w.bind('<ButtonPress-1>', w_click_callback)
+        self.canvasframe.bind('<ButtonPress-1>', w_click_callback)
 
     def select_plant(self, i):
         """Select the plant indexed at i in the plants_palette list."""
@@ -222,7 +235,7 @@ class GridApp:
 
             planted_cell_cmds = {}
             for i, rect in enumerate(self.cells):
-                c = self.w.itemcget(rect, 'fill')
+                c = self.canvasframe.itemcget(rect, 'fill')
                 if c == UNFILLED:
                     continue
                 planted_cell_cmds[self._get_cell_coords(i)] = c
@@ -261,7 +274,7 @@ class GridApp:
         """Reset the grid to the background "UNFILLED" plant."""
 
         for cell in self.cells:
-            self.w.itemconfig(cell, fill=UNFILLED)
+            self.canvasframe.itemconfig(cell, fill=UNFILLED)
         
     def load_image(self):
         """Load an image from a provided file."""
@@ -274,7 +287,7 @@ class GridApp:
 
             x_axis_index = ord(coords[0])-65
             y_axis_index = self.grid_size_n - int(coords[1:])
-            return y_axis_index*self.grid_size_n + x_axis
+            return y_axis_index*self.grid_size_n + x_axis_index
 
         self.filename = filedialog.askopenfilename(filetypes=(
                 ('Grid files', '.grid'),
@@ -298,5 +311,5 @@ class GridApp:
                     continue
                 for coord in coords:
                     i = _coords_to_index(coord.strip())
-                    self.w.itemconfig(self.cells[i], fill=this_plant)
+                    self.canvasframe.itemconfig(self.cells[i], fill=this_plant)
 

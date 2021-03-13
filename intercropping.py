@@ -47,5 +47,7 @@ class Garden():
 
 # Set the whole thing running
 root = Tk()
-grid = GridApp(root, grid_size_n, 600, 600, 5)
+#defaults are 30 cells on a 1024x1024px SVG grid of cells with 5px padding
+#TODO: add a number entry/slider + "apply" button to change padding px and re-render
+grid = GridApp(root, number_of_grid_cells)
 root.mainloop()
