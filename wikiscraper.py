@@ -26,97 +26,75 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 ################################################################################
+from database_stuff import Plants,add_to_db
+import os
 import pandas
 
-if __name__ == '__main__':
-    from database_stuff import Plants,add_to_db
-    import os
-    import pandas
-    sections_to_grab = ['Vegetables', 'Fruit', 'Herbs', 'Flowers', 'Other']
-    thing_to_get = 'https://en.wikipedia.org/wiki/List_of_companion_plants'
-
-    #prototype for matching to this setup
-    attributes_dict = {
-        'name':'',
-        'scientific_name': '',
-        'helps':'',
-        'helped_by':'',
-        'bad_for':'',
-        'attracts_insects':'',
-        'repels_insects':'',
-        'notes':''
-    }
-
-# FUCK IT ALL
-# i was trying to be abstract, apparently I have to be...
-# IMPLICIT
 class ScrapeWikipediaTableForData:
-    def __init__(self,url,sqlalchemy_mapping:dict, sections_tograb):
-        self.dataframes    = pandas.read_html(url)
-        # recursion breaks in a wierd place
-        self.veggies_dict  = attributes_dict
-        self.fruits_dict   = attributes_dict
-        self.herbs_dict    = attributes_dict
-        self.flowers_dict  = attributes_dict
-        self.other_dict    = attributes_dict
+    def __init__(self,sections_to_grab, thing_to_get):
+        self.sections_to_grab = sections_to_grab
+        self.thing_to_get = thing_to_get
+        self.dataframes    = pandas.read_html(self.thing_to_get)
+        self.proto_dict = {'plant_type' : '',
+                            'name':'',
+                            'scientific_name': '',
+                            'helps':'',
+                            'helped_by':'',
+                            'bad_for':'',
+                            'attracts_insects':'',
+                            'repels_insects':'',
+                            'notes':''
+                        }
 
-        self.sections_to_grab = sections_tograb
+        self.Veggies_table = self.dataframes[0]
+        self.Fruit_table   = self.dataframes[1]
+        self.Herbs_table   = self.dataframes[2]
+        self.Flowers_table = self.dataframes[3]
+        self.Other_table   = self.dataframes[4]
+
+        self.box_of_veggies = self.Veggies_table.iloc[range(0,len(self.Veggies_table.index))]
+        self.box_of_fruit   = self.Fruit_table.iloc[range(0,len(self.Fruit_table.index))]
+        self.box_of_herbs   = self.Herbs_table.iloc[range(0,len(self.Herbs_table.index))]
+        self.box_of_flowers = self.Flowers_table.iloc[range(0,len(self.Flowers_table.index))]
+        self.box_of_other   = self.Other_table.iloc[range(0,len(self.Other_table.index))]
+
         self.dothethingjulie()
 
     def dothethingjulie(self):
-        # DATAFRAME 1 THROUGH 5 IS WHAT WE WANT
-        Veggies = self.dataframes[0]
-        Fruit   = self.dataframes[1]
-        Herbs   = self.dataframes[2]
-        Flowers = self.dataframes[3]
-        Other   = self.dataframes[4]
-        
-        # fuck even this breaks
-        #wanted_dataframes = [ Veggies, Fruit, Herbs, Flowers, Other]
-        #for whatever in wanted_dataframes:
-
-        # veggies has 42 rows right now on wikipedia
-        #for veggie_entry in Veggies.iloc[range(0,len(Veggies.index))]
-        #self.veggies_dict.update(\
-            # HEY LISTEN!
-                #plant_type      = row[0], # HEY! 
-                # SET THIS TO THE SECTION ITS IN!
-                # THANK YOU
-                #name            = Veggies.iloc[0][0],
-                #scientific_name = row[1],
-                #helps           = row[2],
-                #helped_by       = row[3],
-                #attracts_insects= row[4],
-                #repels_insects  = row[5],
-                #bad_for         = row[6],
-                #notes           = row[7]
-            #)
-        self.juliedothething()
-        #for dataframe in self.dataframes:
-            # isolate each attribute from dataframe
-            #if dataframe.columns[0][0] in self.sections_to_grab:
-                #iloc[x] is an entire row entry
-                # access each column by using :
-                # iloc[x][y] where y = individual column in that row
-
-                #for row in dataframe.iloc[0:len(dataframe.index)]:
-                
-    def juliedothething(self):
+        for dataframe in self.dataframes:
+            #if the dataframe is in the approved list
+            if dataframe.columns[0][0] in self.sections_to_grab:
+                #renaming columns for easier use
+                dataframe.columns = ['name','scientific_name','helps','helped_by',
+                                'attracts_insects','repels_insects','bad_for','notes']
+                #loop over rows in dataset
+                for row in range(0, len(dataframe.index)):
+                    self.proto_dict.update({
+                            'plant_type'      : dataframe.columns[0][0],
+                            'name'            : self.box_of_veggies.iloc[row][0],
+                            'scientific_name' : self.box_of_veggies.iloc[row][1],
+                            'helps'           : self.box_of_veggies.iloc[row][2],
+                            'helped_by'       : self.box_of_veggies.iloc[row][3],
+                            'attracts_insects': self.box_of_veggies.iloc[row][4],
+                            'repels_insects'  : self.box_of_veggies.iloc[row][5],
+                            'bad_for'         : self.box_of_veggies.iloc[row][6],
+                            'notes'           : self.box_of_veggies.iloc[row][7],
+                        }
+                    )
+                    self.juliedothething(self.proto_dict)
+    def juliedothething(self, dict_to_db: dict):
         NewPlant = Plants(
-            name            = self.attributes_dict.get('name'),
-            scientific_name = self.attributes_dict.get('scientific_name'),
-            helps           = self.attributes_dict.get('helps'),
-            helped_by       = self.attributes_dict.get('helped_by'),
-            attracts_insects= self.attributes_dict.get('attracts_insects'),
-            repels_insects  = self.attributes_dict.get('repels_insects'),
-            bad_for         = self.attributes_dict.get('bad_for'),
-            notes           = self.attributes_dict.get('notes')
+            plant_type      = dict_to_db.get('plant_type'),
+            name            = dict_to_db.get('name'),
+            scientific_name = dict_to_db.get('scientific_name'),
+            helps           = dict_to_db.get('helps'),
+            helped_by       = dict_to_db.get('helped_by'),
+            attracts_insects= dict_to_db.get('attracts_insects'),
+            repels_insects  = dict_to_db.get('repels_insects'),
+            bad_for         = dict_to_db.get('bad_for'),
+            notes           = dict_to_db.get('notes')
             )
         add_to_db(NewPlant)
-
-# this action is done in the database_stuff file once the models and 
-# functions have been declared 
-# this file is also a standalone application 
-if __name__ == '__main__':
-    plant_data_lookup = ScrapeWikipediaTableForData(thing_to_get,attributes_dict, sections_to_grab)
-    print(plant_data_lookup.attributes_dict)
+sections_to_grab = ['Vegetables', 'Fruit', 'Herbs', 'Flowers', 'Other']
+thing_to_get = 'https://en.wikipedia.org/wiki/List_of_companion_plants'
+plant_data_lookup = ScrapeWikipediaTableForData(sections_to_grab,thing_to_get)

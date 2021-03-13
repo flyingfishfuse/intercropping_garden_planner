@@ -8,41 +8,12 @@ from flask import Flask, render_template, Response, Request ,Config
 from std_imports import *
 import pandas
 
-sections_to_grab = ['Vegetables', 'Fruit', 'Herbs', 'Flowers', 'Other']
-thing_to_get = 'https://en.wikipedia.org/wiki/List_of_companion_plants'
-#prototype for matching to this setup
-attributes_dict = {
-        'name':'',
-        'scientific_name': '',
-        'helps':'',
-        'helped_by':'',
-        'bad_for':'',
-        'attracts_insects':'',
-        'repels_insects':'',
-        'notes':''
-    }
-
-################################################################################
-##############                      CONFIG                     #################
-################################################################################
 TEST_DB            = 'sqlite://'
 DATABASE_HOST      = "localhost"
 DATABASE           = "plants_info"
 DATABASE_USER      = "admin"
 SERVER_NAME        = "wat"
 LOCAL_CACHE_FILE   = 'sqlite:///' + DATABASE + DATABASE_HOST + DATABASE_USER + ".db"
-sections_to_grab   = ['Vegetables', 'Fruit', 'Herbs', 'Flowers', 'Other']
-thing_to_get       = 'https://en.wikipedia.org/wiki/List_of_companion_plants'
-plants_attributes_dict = {
-    'name':'',
-    'scientific_name': '',
-    'helps':'',
-    'helped_by':'',
-    'bad_for':'',
-    'attracts_insects':'',
-    'repels_insects':'',
-    'notes':''
-}
 
 class Config(object):
 # TESTING = True
@@ -68,16 +39,7 @@ try:
 
 except Exception:
     redprint(Exception.with_traceback)
-
-# from stack overflow
-#In the second case when you're just restarting the app I would write a 
-#test to see if the table already exists using the reflect method:
-
-#db.metadata.reflect(engine=engine)
-
-#Where engine is your db connection created using create_engine(), and see 
-#if your tables already exist and only define the class if the table is undefined.
-    
+  
 class Plants(database.Model):
     __tablename__       = 'Plants_Data'
     __table_args__      = {'extend_existing': True}
@@ -169,27 +131,76 @@ def dump_gardens():
 # i was trying to be abstract, apparently I have to be...
 # IMPLICIT
 class ScrapeWikipediaTableForData:
-    def __init__(self,url,sqlalchemy_mapping:dict, sections_tograb):
-        self.dataframes    = pandas.read_html(url)
-        # recursion breaks in a wierd place
-        self.veggies_dict  = attributes_dict
-        self.fruits_dict   = attributes_dict
-        self.herbs_dict    = attributes_dict
-        self.flowers_dict  = attributes_dict
-        self.other_dict    = attributes_dict
+    def __init__(self):
+        self.sections_to_grab = ['Vegetables', 'Fruit', 'Herbs', 'Flowers', 'Other']
+        self.thing_to_get = 'https://en.wikipedia.org/wiki/List_of_companion_plants'
+        self.dataframes    = pandas.read_html(self.thing_to_get)
+        self.proto_dict = {'plant_type' : '',
+                            'name':'',
+                            'scientific_name': '',
+                            'helps':'',
+                            'helped_by':'',
+                            'bad_for':'',
+                            'attracts_insects':'',
+                            'repels_insects':'',
+                            'notes':''
+                        }
 
-        self.sections_to_grab = sections_tograb
+        self.Veggies_table = self.dataframes[0]
+        self.Fruit_table   = self.dataframes[1]
+        self.Herbs_table   = self.dataframes[2]
+        self.Flowers_table = self.dataframes[3]
+        self.Other_table   = self.dataframes[4]
+
+        self.box_of_veggies = self.Veggies_table.iloc[range(0,len(self.Veggies_table.index))]
+        self.box_of_fruit   = self.Fruit_table.iloc[range(0,len(self.Fruit_table.index))]
+        self.box_of_herbs   = self.Herbs_table.iloc[range(0,len(self.Herbs_table.index))]
+        self.box_of_flowers = self.Flowers_table.iloc[range(0,len(self.Flowers_table.index))]
+        self.box_of_other   = self.Other_table.iloc[range(0,len(self.Other_table.index))]
+
         self.dothethingjulie()
 
     def dothethingjulie(self):
-        # DATAFRAME 1 THROUGH 5 IS WHAT WE WANT
-        self.Veggies = self.dataframes[0]
-        self.Fruit   = self.dataframes[1]
-        self.Herbs   = self.dataframes[2]
-        self.Flowers = self.dataframes[3]
-        self.Other   = self.dataframes[4]
-        
-        box_of_veggies = self.Veggies.iloc[range(0,len(plant_data_lookup.Veggies.index))]
+        for dataframe in self.dataframes:
+            #if the dataframe is in the approved list
+            if dataframe.columns[0][0] in self.sections_to_grab:
+                #renaming columns for easier use
+                dataframe.columns = ['name','scientific_name','helps','helped_by',
+                                'attracts_insects','repels_insects','bad_for','notes']
+                #loop over rows in dataset
+                for row in range(0, len(dataframe.index)):
+                    self.proto_dict.update({
+                            'plant_type'      : dataframe.columns[0][0],
+                            'name'            : self.box_of_veggies.iloc[row][0],
+                            'scientific_name' : self.box_of_veggies.iloc[row][1],
+                            'helps'           : self.box_of_veggies.iloc[row][2],
+                            'helped_by'       : self.box_of_veggies.iloc[row][3],
+                            'attracts_insects': self.box_of_veggies.iloc[row][4],
+                            'repels_insects'  : self.box_of_veggies.iloc[row][5],
+                            'bad_for'         : self.box_of_veggies.iloc[row][6],
+                            'notes'           : self.box_of_veggies.iloc[row][7],
+                        }
+                    )
+                    self.juliedothething(self.proto_dict)
+    def juliedothething(self, dict_to_db: dict):
+        NewPlant = Plants(
+            plant_type      = dict_to_db.get('plant_type'),
+            name            = dict_to_db.get('name'),
+            scientific_name = dict_to_db.get('scientific_name'),
+            helps           = dict_to_db.get('helps'),
+            helped_by       = dict_to_db.get('helped_by'),
+            attracts_insects= dict_to_db.get('attracts_insects'),
+            repels_insects  = dict_to_db.get('repels_insects'),
+            bad_for         = dict_to_db.get('bad_for'),
+            notes           = dict_to_db.get('notes')
+            )
+        add_to_db(NewPlant)
+
+
+# this action is done in the database_stuff file once the models and 
+# functions have been declared 
+# this file is also a standalone application 
+#plant_data_lookup = ScrapeWikipediaTableForData()
 
         #self.juliedothething()
         #for dataframe in self.dataframes:
@@ -201,21 +212,3 @@ class ScrapeWikipediaTableForData:
 
                 #for row in dataframe.iloc[0:len(dataframe.index)]:
                 
-    def juliedothething(self):
-        NewPlant = Plants(
-            name            = self.attributes_dict.get('name'),
-            scientific_name = self.attributes_dict.get('scientific_name'),
-            helps           = self.attributes_dict.get('helps'),
-            helped_by       = self.attributes_dict.get('helped_by'),
-            attracts_insects= self.attributes_dict.get('attracts_insects'),
-            repels_insects  = self.attributes_dict.get('repels_insects'),
-            bad_for         = self.attributes_dict.get('bad_for'),
-            notes           = self.attributes_dict.get('notes')
-            )
-        add_to_db(NewPlant)
-
-# this action is done in the database_stuff file once the models and 
-# functions have been declared 
-# this file is also a standalone application 
-plant_data_lookup = ScrapeWikipediaTableForData(thing_to_get,attributes_dict, sections_to_grab)
-print(plant_data_lookup.attributes_dict)
