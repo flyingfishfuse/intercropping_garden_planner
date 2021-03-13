@@ -47,6 +47,9 @@ if __name__ == '__main__':
         'notes':''
     }
 
+# FUCK IT ALL
+# i was trying to be abstract, apparently I have to be...
+# DIRECT
 class ScrapeWikipediaTableForData:
     def __init__(self,url,sqlalchemy_mapping:dict, sections_tograb):
         self.dataframes  = pandas.read_html(url)
@@ -55,29 +58,39 @@ class ScrapeWikipediaTableForData:
         self.dothethingjulie()
 
     def dothethingjulie(self):
-        for dataframe in self.dataframes:
+        # DATAFRAME 1 THROUGH 5 IS WHAT WE WANT
+        Veggies = self.dataframes[0]
+        Fruit   = self.dataframes[1]
+        Herbs   = self.dataframes[2]
+        Flowers = self.dataframes[3]
+        Other   = self.dataframes[4]
+        
+        wanted_dataframes = [ Veggies, Fruit, Herbs, Flowers, Other]
+        for section in wanted_dataframes:
+            self.attributes_dict.update(\
+            # HEY LISTEN!
+                plant_type      = row[0], # HEY! 
+                # SET THIS TO THE SECTION ITS IN!
+                # THANK YOU
+                name            = row[0],
+                scientific_name = row[1],
+                helps           = row[2],
+                helped_by       = row[3],
+                attracts_insects= row[4],
+                repels_insects  = row[5],
+                bad_for         = row[6],
+                notes           = row[7]
+            )
+        self.juliedothething()
+        #for dataframe in self.dataframes:
             # isolate each attribute from dataframe
-            if dataframe.columns[0][0] in self.sections_to_grab:
+            #if dataframe.columns[0][0] in self.sections_to_grab:
                 #iloc[x] is an entire row entry
                 # access each column by using :
                 # iloc[x][y] where y = individual column in that row
 
-                for row in dataframe.iloc[range(0,len(dataframe.index))]:
-                    self.attributes_dict.update(\
-                        # HEY LISTEN!
-                        plant_type      = row[0], # HEY! 
-                        # SET THIS TO THE SECTION ITS IN!
-                        # THANK YOU
-                        name            = row[0],
-                        scientific_name = row[1],
-                        helps           = row[2],
-                        helped_by       = row[3],
-                        attracts_insects= row[4],
-                        repels_insects  = row[5],
-                        bad_for         = row[6],
-                        notes           = row[7]
-                    )
-        self.juliedothething()
+                #for row in dataframe.iloc[0:len(dataframe.index)]:
+                
     def juliedothething(self):
         NewPlant = Plants(
             name            = self.attributes_dict.get('name'),
