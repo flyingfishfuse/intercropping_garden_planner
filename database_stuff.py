@@ -163,9 +163,6 @@ def add_to_db(thingie):
     try:
         database.session.add(thingie)
         database.session.commit
-        #redprint("=========Database Commit=======")
-        #greenprint(thingie)
-        #redprint("=========Database Commit=======")
     except Exception as derp:
         print(derp)
         print(makered("[-] add_to_db() FAILED"))
@@ -208,23 +205,20 @@ class ScrapeWikipediaTableForData:
             #if the dataframe is in the approved list
             if dataframe.columns[0][0] in self.sections_to_grab:
                 #renaming columns for easier use
-                greenprint("[+] scanning {}".format(dataframe.columns[0][0]))
                 dataframe.columns = ['name','scientific_name','helps','helped_by',
                                 'attracts_insects','repels_insects','bad_for','notes']
                 #loop over rows in dataset
                 for row in range(0, len(dataframe.index)):
-                    greenprint("[+] processing {} ".format(dataframe.iloc[row][0]))
                     plant_entry = Plants(plant_type      = dataframe.columns[0][0],
-                                         name            = dataframe.iloc[row][0],
-                                         scientific_name = dataframe.iloc[row][1],
-                                         helps           = dataframe.iloc[row][2],
-                                         helped_by       = dataframe.iloc[row][3],
-                                         attracts_insects= dataframe.iloc[row][4],
-                                         repels_insects  = dataframe.iloc[row][5],
-                                         bad_for         = dataframe.iloc[row][6],
-                                         notes           = dataframe.iloc[row][7],
+                                         name            = dataframe.iloc[row]['name'],
+                                         scientific_name = dataframe.iloc[row]['scientific_name'],
+                                         helps           = dataframe.iloc[row]['helps'],
+                                         helped_by       = dataframe.iloc[row]['helped_by'],
+                                         attracts_insects= dataframe.iloc[row]['attracts_insects'],
+                                         repels_insects  = dataframe.iloc[row]['repels_insects'],
+                                         bad_for         = dataframe.iloc[row]['bad_for'],
+                                         notes           = dataframe.iloc[row]['notes'],
                                         )
-                    greenprint("[+] adding {} to database".format(dataframe.iloc[row][0]))
                     database.session.add(plant_entry)
                 database.session.commit()
 
