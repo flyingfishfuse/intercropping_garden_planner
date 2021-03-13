@@ -30,6 +30,10 @@
 # THE SOFTWARE.
 ################################################################################
 
+# no, no python 2 compatibility focus on this...
+# I am mr python but 2.x is dead now
+# a gardening app on the fringe of the code map
+# doesnt need to have a legacy system consideration
 import sys
 
 from tkinter import *
@@ -45,15 +49,19 @@ class GridApp:
                  canvas_width_px = 1024,
                  canvas_height_px = 1024
                  ):
-        """Initialize a grid and the Tk Frame on which it is rendered."""
+        
         # The plant palette
         # soon to be the plant pallettettee
-        plants_palette = [UNFILLED]
+        self.plants_palette = [UNFILLED]
         for each_plant in Plants:
-            plants_palette.append(each_plant.name)
+            self.plants_palette.append(each_plant.name)
+        self.num_plants_palette = len(self.plants_palette)
 
-        num_plants_palette = len(plants_palette)
-
+    def setup_gui(self, canvas_width_px: int, canvas_height_px: int, grid_size_n: int):
+        """
+        Initialize a grid and the Tk Frame on which it is rendered.
+        Modified to be non-monolithic
+        """
         # Number of cells in each dimension.
         self.grid_size_n       = grid_size_n 
         self.pad_px    = 5
@@ -118,39 +126,52 @@ class GridApp:
                 self.cells.append(garden_cell)
 
         # Load and save image buttons
-        b_load = Button(frame, 
+        button_load = Button(frame, 
                         text='open', 
                         command=self.load_image)
-        b_load.pack(side=RIGHT, 
+        button_load.pack(side=RIGHT, 
                     padx=self.pad_px, 
                     pady=self.pad_px)
-        b_save = Button(frame, 
+        button_save = Button(frame, 
                         text='save', 
                         command=self.save_by_plant)
-        b_save.pack(side=RIGHT, 
+        button_save.pack(side=RIGHT, 
                     padx=self.pad_px, 
                     pady=self.pad_px)
+        # fills in the rest randomly based on
+        # some clever guesswork?
+        # the idea is you put in the plants you either have planted 
+        # already to find good neighbors or you make the shape of your 
+        # plot and have it auto fill in the rest after you put preferred
+        # plants in preferred locations.
+        button_autofill = Button(frame, 
+                        text='save', 
+                        command=self.autofill_grid)
+        button_autofill.pack(side=RIGHT, 
+                        padx=self.pad_px, 
+                        pady=self.pad_px)
         # Add a button to clear the grid
-        b_clear = Button(frame, 
+        button_clear = Button(frame, 
                          text='clear', 
                          command=self.clear_grid)
-        b_clear.pack(side=LEFT, 
-                     padx=self.pad_px, 
-                     pady=self.pad_px)
+        button_clear.pack(side=LEFT, 
+                        padx=self.pad_px, 
+                        pady=self.pad_px)
 
         def palette_click_callback(event):
             """Function called when someone clicks on the palette canvas."""
-            x, y = event.x, event.y
+            x = event.x
+            y = event.y
 
             # Did the user click a plant from the palette?
-            if self.palette_pad_px < y < p_height + self.palette_pad_px:
+            if self.palette_pad_px < y < self.palette_height_px + self.palette_pad_px:
                 # Index of the selected palette rectangle (plus padding)
-                ic = x // (p_width + self.palette_pad_px)
+                palette_cell_selected = x // (self.palette_width_px + self.palette_pad_px)
                 # x-position with respect to the palette rectangle left edge
-                xp = x - ic*(p_width + self.palette_pad_px) - self.palette_pad_px
+                xp = x - palette_cell_selected*(self.palette_width_px + self.palette_pad_px) - self.palette_pad_px
                 # Is the index valid and the click within the rectangle?
-                if ic < self.num_plants_palette and 0 < xp < p_width:
-                    self.select_plant(ic)
+                if palette_cell_selected < self.num_plants_palette and 0 < xp < self.palette_width_px:
+                    self.select_plant(palette_cell_selected)
         # Bind the palette click callback function to the left mouse button
         # press event on the palette canvas.
         self.palette_canvas.bind('<ButtonPress-1>', palette_click_callback)
@@ -279,19 +300,3 @@ class GridApp:
                     i = _coords_to_index(coord.strip())
                     self.w.itemconfig(self.cells[i], fill=this_plant)
 
-# Get the grid size from the command line, if provided
-try:
-    grid_size_n = int(sys.argv[1])
-except IndexError:
-    grid_size_n = DEFAULT_N
-except ValueError:
-    print('Usage: {} <n>\nwhere n is the grid size.'.format(sys.argv[0]))
-    sys.exit(1)
-if grid_size_n < 1 or grid_size_n > MAX_N:
-    print('Minimum grid_size_n is 1, Maximum grid_size_n is {}'.format(MAX_N))
-    sys.exit(1)
-
-# Set the whole thing running
-root = Tk()
-grid = GridApp(root, grid_size_n, 600, 600, 5)
-root.mainloop()

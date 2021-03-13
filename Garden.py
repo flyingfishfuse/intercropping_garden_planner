@@ -35,8 +35,6 @@ __email__     = 'null@null.com'
 __version__ = '0.1A'
 __license__ = 'GPLv3'
 
-from plants import *
-from grid import *
 
 class Garden():
     def __new__(cls) -> Any:
@@ -44,8 +42,3 @@ class Garden():
     def __init__(self) -> None:
         self.hemisphere = 'north'
         pass
-
-# Set the whole thing running
-root = Tk()
-grid = GridApp(root, grid_size_n, 600, 600, 5)
-root.mainloop()
