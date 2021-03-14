@@ -46,7 +46,6 @@ try:
 		COLORMEQUALIFIED = True
 except ImportError as derp:
 	print("[-] NO COLOR PRINTING FUNCTIONS AVAILABLE, Install the Colorama Package from pip")
-	traceback.print_exc()
 	COLORMEQUALIFIED = False
     
 ##########################

@@ -34,15 +34,13 @@
 # I am mr python but 2.x is dead now
 # a gardening app on the fringe of the code map
 # doesnt need to have a legacy system consideration
-import sys
-
 from tkinter import *
-from tkinter import filedialog
 from std_imports import *
 from Windows import MainWindow,ConfigurationWindow,PlantListWindow
+
 # Maximum and default grid size
 MAX_N, DEFAULT_N = 26, 10
-# The "default" plant for an unfilled grid cell
+# The "default plant" for an unfilled grid cell
 UNFILLED = '#fff'
 
 class GardenGridGui:
@@ -71,19 +69,22 @@ class GardenGridGui:
                                                  self.grid_size_n)
             #configuration_window    = ConfigurationWindow(self.master,self.config_win_size)
             #plants_list_window      = PlantListWindow(self.master,self.plants_list_window_size)
-        except Exception as derp:
-            error_message("[-] Window Initialization FAILED" + str(traceback.print_exc()))
+        except Exception:
+            error_message("[-] Window Initialization FAILED")
 
-        try:
-            # Set the whole thing running
-            root = Tk()
-            #defaults are 30 cells on a 1024x1024px SVG grid of cells with 5px padding
-            #TODO: add a number entry/slider + "apply" button to change padding px and re-render
-            Garden = GardenGridGui(root)
-            root.mainloop()
-        except Exception as derp:
-            error_message("[-] Application Initialization FAILED" + str(traceback.print_exc()))
-            #TODO: 
-                    # FALLBACK 
-                # TO
-            # TERMINAL
+
+    #TODO: 
+            # FALLBACK 
+        # TO
+    # TERMINAL
+# ASK IF USER WANTS POP
+
+try:
+    # Set the whole thing running
+    root = Tk()
+    #defaults are 30 cells on a 1024x1024px SVG grid of cells with 5px padding
+    #TODO: add a number entry/slider + "apply" button to change padding px and re-render
+    Garden = GardenGridGui(root, grid_size_n=40)
+    root.mainloop()
+except Exception:
+    error_message("[-] Application Initialization FAILED")

@@ -29,16 +29,14 @@
 
 # https://en.wikipedia.org/wiki/List_of_companion_plants
 # https://en.wikipedia.org/wiki/Companion_planting
+import sys
 import pandas
+import traceback
+from std_imports import *
 from sqlalchemy import create_engine
 from sqlalchemy.pool import StaticPool
 from flask_sqlalchemy import SQLAlchemy
 from flask import Flask, render_template, Response, Request ,Config
-
-# TESTING =True
-# set in the std_imports for a global TESTING at top level scope
-from std_imports import *
-
 ################################################################################
 ##############                      CONFIG                     #################
 ################################################################################
@@ -63,7 +61,7 @@ try:
     if TESTING == True:
         database.metadata.clear()
 except Exception:
-    error_message("[-] Database Initialization FAILED \n" + str(traceback.print_exc()))
+    error_message("[-] Database Initialization FAILED \n")
     
 class Plants(database.Model):
     __tablename__       = 'Plants'
@@ -74,8 +72,7 @@ class Plants(database.Model):
                                           autoincrement = True)
     plant_type                         = database.Column(database.String(256))                                          
     name                               = database.Column(database.String(256),
-                                          primary_key   = True,
-                                          unique        = True)
+                                          primary_key   = True)
     scientific_name                    = database.Column(database.String(256))
     helps                              = database.Column(database.String(256))
     helped_by                          = database.Column(database.String(256))
@@ -116,8 +113,7 @@ class Garden(database.Model):
                             unique        =True,
                             autoincrement =True)
     name             = database.Column(database.String(256),
-                            primary_key   = True,
-                            unique        =True)
+                            primary_key   = True)
     hemisphere       = database.Column(database.String(256))
     zone             = database.Column(database.String(256))
     notes            = database.Column(database.String(256))
@@ -136,11 +132,29 @@ notes      : {}
             self.zone,
             self.notes
         )
+
+def add_plant_to_db(plant_to_add):
+    """
+    """
+    try:
+        duplicate_check_query = database.session.query(Plants).filter_by(name=plant_to_add.name).scalar() is not None
+        if duplicate_check_query:
+            info_message('[+] Duplicate Entry Avoided : ' + plant_to_add.name)
+        database.session.add(plant_to_add)
+        database.session.commit
+        info_message('[+] Plant Added To Database : ' + plant_to_add.name)
+    except Exception:
+        exc_type, exc_value, exc_tb = sys.exc_info()
+        tb = traceback.TracebackException(exc_type, exc_value, exc_tb) 
+        error_message("[-] add_plant_to_db() FAILED \n" + ''.join(tb.format_exception_only()))
+
 try:
     database.create_all()
     database.session.commit()
-except Exception as derp:
-    error_message("[-] Update_db FAILED \n" + str(traceback.print_exc()))
+except Exception:
+    exc_type, exc_value, exc_tb = sys.exc_info()
+    tb = traceback.TracebackException(exc_type, exc_value, exc_tb) 
+    error_message("[-] Database Table Creation FAILED \n" + ''.join(tb.format_exception_only()))
 
 test_plant = Plants(plant_type      = 'Tree',
                     name            = 'fuck apple',
@@ -161,26 +175,8 @@ try:
     database.session.add(test_plant)
     database.session.add(test_garden)
     database.session.commit()
-except Exception as derp:
-    error_message("[-] Update_db FAILED \n" + str(traceback.print_exc()))
-
-def add_plant_to_db(plant_to_add):
-    """
-    """
-    try:
-        duplicate_check_query = database.session.query(Plants).filter_by(name=plant_to_add.name).scalar() is not None
-        if duplicate_check_query:
-            info_message('[+] Duplicate Entry Avoided : ' + plant_to_add.name)
-        database.session.add(plant_to_add)
-        database.session.commit
-    except Exception as derp:
-        error_message("[-] add_plant_to_db() FAILED \n" + str(traceback.print_exc()))
-
-def update_db():
-    try:
-        database.session.commit()
-    except Exception as derp:
-        error_message("[-] Update_db FAILED \n" + str(traceback.print_exc()))
+except Exception:
+    error_message("[-] Update_db FAILED \n")
 
 class ScrapeWikipediaTableForData:
     def __init__(self,sections_to_grab, thing_to_get):
@@ -196,18 +192,24 @@ class ScrapeWikipediaTableForData:
                 dataframe.columns = ['name','scientific_name','helps','helped_by',
                                 'attracts_insects','repels_insects','bad_for','notes']
                 #loop over rows in dataset
+                # must discard rows with the table header/title
+                # that column is a row
                 for row in range(0, len(dataframe.index)):
-                    plant_entry = Plants(plant_type      = dataframe.columns[0][0],
-                                         name            = dataframe.iloc[row]['name'],
-                                         scientific_name = dataframe.iloc[row]['scientific_name'],
-                                         helps           = dataframe.iloc[row]['helps'],
-                                         helped_by       = dataframe.iloc[row]['helped_by'],
-                                         attracts_insects= dataframe.iloc[row]['attracts_insects'],
-                                         repels_insects  = dataframe.iloc[row]['repels_insects'],
-                                         bad_for         = dataframe.iloc[row]['bad_for'],
-                                         notes           = dataframe.iloc[row]['notes'],
+                    if dataframe.iloc[row]['name'] == 'Common name':
+                        warning_message("[-] PANDAS - Table Header discarded from rows")
+                    else :
+                        plant_entry = Plants(plant_type  = dataframe.columns[0][0],
+                                        name            = dataframe.iloc[row]['name'],
+                                        scientific_name = dataframe.iloc[row]['scientific_name'],
+                                        helps           = dataframe.iloc[row]['helps'],
+                                        helped_by       = dataframe.iloc[row]['helped_by'],
+                                        attracts_insects= dataframe.iloc[row]['attracts_insects'],
+                                        repels_insects  = dataframe.iloc[row]['repels_insects'],
+                                        bad_for         = dataframe.iloc[row]['bad_for'],
+                                        notes           = dataframe.iloc[row]['notes'],
                                         )
-                    database.session.add(plant_entry)
-                database.session.commit()
+                    #database.session.add(plant_entry)
+                    add_plant_to_db(plant_entry)
+                #database.session.commit()
 
 plant_data_lookup = ScrapeWikipediaTableForData(sections_to_grab,thing_to_get)
