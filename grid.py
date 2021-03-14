@@ -70,8 +70,9 @@ class GardenGridGui:
             #configuration_window    = ConfigurationWindow(self.master,self.config_win_size)
             #plants_list_window      = PlantListWindow(self.master,self.plants_list_window_size)
         except Exception:
-            error_message("[-] Window Initialization FAILED")
-
+            exc_type, exc_value, exc_tb = sys.exc_info()
+            tb = traceback.TracebackException(exc_type, exc_value, exc_tb) 
+            error_message("[-] Window Initialization FAILED" + ''.join(tb.format_exception_only()))            
 
     #TODO: 
             # FALLBACK 

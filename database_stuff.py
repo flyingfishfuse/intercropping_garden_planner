@@ -37,6 +37,8 @@ from sqlalchemy import create_engine
 from sqlalchemy.pool import StaticPool
 from flask_sqlalchemy import SQLAlchemy
 from flask import Flask, render_template, Response, Request ,Config
+
+
 ################################################################################
 ##############                      CONFIG                     #################
 ################################################################################
@@ -61,8 +63,13 @@ try:
     if TESTING == True:
         database.metadata.clear()
 except Exception:
-    error_message("[-] Database Initialization FAILED \n")
-    
+    exc_type, exc_value, exc_tb = sys.exc_info()
+    tb = traceback.TracebackException(exc_type, exc_value, exc_tb) 
+    error_message("[-] Database Initialization FAILED \n" + ''.join(tb.format_exception_only()))
+
+#########################################################
+###                    PLANT MODEL
+#########################################################
 class Plants(database.Model):
     __tablename__       = 'Plants'
     #__table_args__      = {'extend_existing': True}
@@ -103,8 +110,9 @@ notes     : {}
             self.notes
         )
 
-# representation of a whole garden grid
-#stores the data for the GUI representation
+#########################################################
+###                    GARDEN MODEL
+#########################################################
 class Garden(database.Model):
     __tablename__       = 'Garden'
     #__table_args__      = {'extend_existing': True}
@@ -133,6 +141,9 @@ notes      : {}
             self.notes
         )
 
+#########################################################
+###             DATABASE FUNCTIONS
+#########################################################
 def add_plant_to_db(plant_to_add):
     """
     """
@@ -148,6 +159,9 @@ def add_plant_to_db(plant_to_add):
         tb = traceback.TracebackException(exc_type, exc_value, exc_tb) 
         error_message("[-] add_plant_to_db() FAILED \n" + ''.join(tb.format_exception_only()))
 
+#########################################################
+###         INITIALIZE DATABASE TABLES
+#########################################################
 try:
     database.create_all()
     database.session.commit()
@@ -156,6 +170,9 @@ except Exception:
     tb = traceback.TracebackException(exc_type, exc_value, exc_tb) 
     error_message("[-] Database Table Creation FAILED \n" + ''.join(tb.format_exception_only()))
 
+#########################################################
+###                  TEST ENTRIES 
+#########################################################
 test_plant = Plants(plant_type      = 'Tree',
                     name            = 'fuck apple',
                     scientific_name = 'fruitus givafuckus',
@@ -178,6 +195,9 @@ try:
 except Exception:
     error_message("[-] Update_db FAILED \n")
 
+#########################################################
+###           VERIFY / POPULATE DATABASE
+#########################################################
 class ScrapeWikipediaTableForData:
     def __init__(self,sections_to_grab, thing_to_get):
         self.sections_to_grab = sections_to_grab
