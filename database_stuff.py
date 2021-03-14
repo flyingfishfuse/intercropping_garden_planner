@@ -63,11 +63,11 @@ try:
     if TESTING == True:
         database.metadata.clear()
 except Exception:
-    redprint(Exception.with_traceback)
+    error_message("[-] Database Initialization FAILED \n" + str(traceback.print_exc()))
     
 class Plants(database.Model):
     __tablename__       = 'Plants'
-    __table_args__      = {'extend_existing': True}
+    #__table_args__      = {'extend_existing': True}
     id                  = database.Column(database.Integer, \
                                           index=True, \
                                           primary_key = True, \
@@ -109,7 +109,7 @@ notes     : {}
 #stores the data for the GUI representation
 class Garden(database.Model):
     __tablename__       = 'Garden'
-    __table_args__      = {'extend_existing': True}
+    #__table_args__      = {'extend_existing': True}
     id                  = database.Column(database.Integer, \
                                           index=True, \
                                           primary_key = True, \
@@ -134,9 +134,11 @@ notes      : {}
             self.zone,
             self.notes
         )
-
-database.create_all()
-database.session.commit()
+try:
+    database.create_all()
+    database.session.commit()
+except Exception as derp:
+    error_message("[-] Update_db FAILED \n" + str(traceback.print_exc()))
 
 test_plant = Plants(plant_type      = 'Tree',
                     name            = 'fuck apple',
@@ -153,9 +155,12 @@ test_garden = Garden(name = 'home base',
                      zone = '7a',
                      notes = 'bada-bing bada-boom, big badaboom'
                     )
-database.session.add(test_plant)
-database.session.add(test_garden)
-database.session.commit()
+try:
+    database.session.add(test_plant)
+    database.session.add(test_garden)
+    database.session.commit()
+except Exception as derp:
+    error_message("[-] Update_db FAILED \n" + str(traceback.print_exc()))
 
 def add_to_db(thingie):
     """
@@ -171,8 +176,7 @@ def update_db():
     try:
         database.session.commit()
     except Exception as derp:
-        print(derp.with_traceback)
-        print(makered("[-] Update_db FAILED"))
+        error_message("[-] Update_db FAILED \n" + str(traceback.print_exc()))
 
 def dump_plants():
         """

@@ -35,19 +35,31 @@ __email__     = 'null@null.com'
 __version__ = '0.1A'
 __license__ = 'GPLv3'
 
-from plants import *
 from grid import *
 
-class Garden():
+class GardenEntity():
     def __new__(cls) -> Any:
         pass
     def __init__(self) -> None:
         self.hemisphere = 'north'
         pass
 
-# Set the whole thing running
-root = Tk()
-#defaults are 30 cells on a 1024x1024px SVG grid of cells with 5px padding
-#TODO: add a number entry/slider + "apply" button to change padding px and re-render
-grid = GridApp(root, number_of_grid_cells)
-root.mainloop()
+class PlantEntity:
+	def __init__(self,plant_data : dict):
+		self.goodneighbors = list
+	
+	def __repr__(self):
+		print(" I AM A : {}".format(self.__name__))
+		#print(self.__name__) 
+
+    
+class IntercroppingRelationships:
+    def __new__(cls, *args):
+        #put the plants here for now
+        pass
+    def __init__(self):
+        pass
+    def get_goodneighbors(self, plant_name:str):
+        pass
+    def get_badneighbors(self, plant_name:str):
+        pass

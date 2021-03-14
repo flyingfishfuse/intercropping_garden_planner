@@ -34,7 +34,9 @@ TESTING = True
 # Imports for logging and colorization #
 ########################################
 
-import logging 
+import logging
+import traceback
+
 try:
 	import colorama
 	from colorama import init
@@ -44,6 +46,7 @@ try:
 		COLORMEQUALIFIED = True
 except ImportError as derp:
 	print("[-] NO COLOR PRINTING FUNCTIONS AVAILABLE, Install the Colorama Package from pip")
+	traceback.print_exc()
 	COLORMEQUALIFIED = False
     
 ##########################
@@ -73,7 +76,7 @@ yellow_bold_print 	= lambda text: print(Fore.YELLOW + Style.BRIGHT + \
 ###########
 # LOGGING #
 ###########
-log_file = '/tmp/logtest'
+log_file = 'garden_grid_message_log'
 logging.basicConfig(filename=log_file, format='%(asctime)s %(message)s', filemode='w')
 logger		   		= logging.getLogger()
 logger.setLevel(logging.DEBUG)
