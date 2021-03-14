@@ -68,10 +68,10 @@ except Exception:
 class Plants(database.Model):
     __tablename__       = 'Plants'
     #__table_args__      = {'extend_existing': True}
-    id                  = database.Column(database.Integer, \
-                                          index=True, \
-                                          primary_key = True, \
-                                          unique=True, \
+    id                  = database.Column(database.Integer,
+                                          index=True,
+                                          primary_key = True,
+                                          unique=True,
                                           autoincrement=True)
     plant_type                         = database.Column(database.String(256))                                          
     name                               = database.Column(database.String(256))
@@ -110,16 +110,17 @@ notes     : {}
 class Garden(database.Model):
     __tablename__       = 'Garden'
     #__table_args__      = {'extend_existing': True}
-    id                  = database.Column(database.Integer, \
-                                          index=True, \
-                                          primary_key = True, \
-                                          unique=True, \
-                                          autoincrement=True)
-    name                               = database.Column(database.String(256))
-    hemisphere                         = database.Column(database.String(256))
-    zone                               = database.Column(database.String(256))
-    notes                              = database.Column(database.String(256))
-    grid_data                          = database.Column(database.Text)
+    id               = database.Column(database.Integer,
+                            index         =True,
+                            unique        =True,
+                            autoincrement =True)
+    name             = database.Column(database.String(256),
+                            primary_key   = True,
+                            unique        =True)
+    hemisphere       = database.Column(database.String(256))
+    zone             = database.Column(database.String(256))
+    notes            = database.Column(database.String(256))
+    grid_data        = database.Column(database.Text)
 
     def __repr__(self):
         return '''
@@ -162,41 +163,23 @@ try:
 except Exception as derp:
     error_message("[-] Update_db FAILED \n" + str(traceback.print_exc()))
 
-def add_to_db(thingie):
+def add_plant_to_db(plant_to_add):
     """
     """
     try:
-        database.session.add(thingie)
+        duplicate_check_query = database.session.query(Plants).filter_by(name=plant_to_add.name).scalar() is not None
+        if duplicate_check_query:
+            info_message('[+] Duplicate Entry Avoided : ' + plant_to_add.name)
+        database.session.add(plant_to_add)
         database.session.commit
     except Exception as derp:
-        print(derp)
-        print(makered("[-] add_to_db() FAILED"))
+        error_message("[-] add_plant_to_db() FAILED \n" + str(traceback.print_exc()))
 
 def update_db():
     try:
         database.session.commit()
     except Exception as derp:
         error_message("[-] Update_db FAILED \n" + str(traceback.print_exc()))
-
-def dump_plants():
-        """
-    Prints plants database to screen
-        """
-        print(makered("-------------DUMPING DATABASE------------"))
-        records1 = database.session.query(Plants).all()
-        for each in records1:
-            print (each)
-        print(makered("------------END DATABASE DUMP------------"))
-
-def dump_gardens():
-        """
-    Prints garedns database to screen
-        """
-        print(makered("-------------DUMPING DATABASE------------"))
-        records1 = database.session.query(Garden).all()
-        for each in records1:
-            print (each)
-        print(makered("------------END DATABASE DUMP------------"))
 
 class ScrapeWikipediaTableForData:
     def __init__(self,sections_to_grab, thing_to_get):

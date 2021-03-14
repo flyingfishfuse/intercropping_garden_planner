@@ -61,6 +61,7 @@ class MainWindow:
                                             fill = self.plants_palette[plant_num]
                                         )
             self.palette_rects.append(rectangle)
+        
         # selected_plant_index is the index of the currently selected plant.
         self.selected_plant_index = 0
         self.select_plant(self.selected_plant_index)
@@ -90,17 +91,13 @@ class MainWindow:
         button_load.pack(side=RIGHT,padx=self.pad_px,pady=self.pad_px)
         button_save = Button(frame,text='save',command=self.save_by_plant)
         button_save.pack(side=RIGHT,padx=self.pad_px,pady=self.pad_px)
-        # fills in the rest randomly based on
-        # some clever guesswork?
-        # the idea is you put in the plants you either have planted 
-        # already to find good neighbors or you make the shape of your 
-        # plot and have it auto fill in the rest after you put preferred
-        # plants in preferred locations.
+
         button_autofill = Button(frame,text='make_garden_magic.exe', command=self.autofill_grid)
         button_autofill.pack(side=RIGHT,padx=self.pad_px,pady=self.pad_px)
         # Add a button to clear the grid
         button_clear = Button(frame,text='clear',command=self.clear_grid)
         button_clear.pack(side=LEFT,padx=self.pad_px,pady=self.pad_px)
+        
         def autofill_grid(event):
             pass
         def create_button(self, text, _class):
@@ -262,25 +259,23 @@ class ConfigurationWindow(MainWindow):
 
     def __init__(self, master):
         self.master = master
-        self.master.title("Window n.2")
+        self.master.title("Configuration Window")
         self.master.geometry("400x100+200+200")
         self.show_widgets()
 
     def show_widgets(self):
         "A frame with a button to quit the window"
-        self.frame = Frame(self.master, bg="red")
-        self.quit_button = Button(
-            self.frame, text=f"Quit this window n. 2",
-            command=self.close_window)
+        self.frame = Frame(self.master)
+        self.quit_button = Button(self.frame, text=f"Quit this window",command=self.close_window)
         self.quit_button.pack()
-        self.create_button("Open window 3 from window 2", Win3)
+        self.create_button("Open Plant list database", PlantListWindow)
         self.frame.pack()
 
     def close_window(self):
         self.master.destroy()
 
 class PlantListWindow(MainWindow):
-    def __init__(self, master,size = "400x200+200+200"):
+    def __init__(self, master,size):
         self.master = master
         self.master.title("All my Plants")
         self.master.geometry(size)
@@ -294,5 +289,23 @@ class PlantListWindow(MainWindow):
         self.label.pack()
         self.frame.pack()
 
+    def close_window(self):
+        self.master.destroy()
+
+class PlantInformationWindow(MainWindow):
+    def __init__(self, master, size, plant_to_display):
+        self.master = master
+        self.master.title("Plant Information")
+        self.master.geometry(size)
+        self.show_widgets()
+
+    def show_widgets(self):
+        self.frame = Frame(self.master)
+        self.quit  = Button(self.frame, text=f"Quit this window" ,command=self.close_window)
+        self.quit.pack()
+        self.label = Label(self.frame, text="THIS IS ONLY IN THE INFORMATION WINDOW")
+        self.label.pack()
+        self.frame.pack()
+        
     def close_window(self):
         self.master.destroy()

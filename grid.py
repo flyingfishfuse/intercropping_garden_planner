@@ -45,7 +45,7 @@ MAX_N, DEFAULT_N = 26, 10
 # The "default" plant for an unfilled grid cell
 UNFILLED = '#fff'
 
-class GridApp:
+class GardenGridGui:
     """The main class representing a grid of planted cells."""
     def __init__(self, 
                  master,
@@ -67,19 +67,23 @@ class GridApp:
         plants_list_window_size = '1024x1024+20+20'
         try:       
             main_window             = MainWindow(self.canvas_width_px,
-                                             self.canvas_height_px,
-                                             self.grid_size_n)
-            configuration_window    = ConfigurationWindow(self.master,self.config_win_size)
-            plants_list_window      = PlantListWindow(self.master , self.plants_list_window_size)
+                                                 self.canvas_height_px,
+                                                 self.grid_size_n)
+            #configuration_window    = ConfigurationWindow(self.master,self.config_win_size)
+            #plants_list_window      = PlantListWindow(self.master,self.plants_list_window_size)
         except Exception as derp:
-            error_message(traceback.print_exc())
+            error_message("[-] Window Initialization FAILED" + str(traceback.print_exc()))
 
         try:
             # Set the whole thing running
             root = Tk()
             #defaults are 30 cells on a 1024x1024px SVG grid of cells with 5px padding
             #TODO: add a number entry/slider + "apply" button to change padding px and re-render
-            grid = GridApp(root)
+            Garden = GardenGridGui(root)
             root.mainloop()
         except Exception as derp:
-            error_message(traceback.print_exc())
+            error_message("[-] Application Initialization FAILED" + str(traceback.print_exc()))
+            #TODO: 
+                    # FALLBACK 
+                # TO
+            # TERMINAL
