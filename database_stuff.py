@@ -29,7 +29,7 @@
 
 # https://en.wikipedia.org/wiki/List_of_companion_plants
 # https://en.wikipedia.org/wiki/Companion_planting
-import sys
+import sys,os
 import pandas
 import traceback
 from std_imports import *
@@ -37,7 +37,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.pool import StaticPool
 from flask_sqlalchemy import SQLAlchemy
 from flask import Flask, render_template, Response, Request ,Config
-
+from sqlalchemy_utils import database_exists,create_database
 
 ################################################################################
 ##############                      CONFIG                     #################
@@ -46,6 +46,7 @@ from flask import Flask, render_template, Response, Request ,Config
 TEST_DB            = 'sqlite://'
 DATABASE           = "plants_info"
 LOCAL_CACHE_FILE   = 'sqlite:///' + DATABASE + ".db"
+DATABASE_FILENAME  = DATABASE + '.db'
 sections_to_grab = ['Vegetables', 'Fruit', 'Herbs', 'Flowers', 'Other']
 thing_to_get = 'https://en.wikipedia.org/wiki/List_of_companion_plants'
 
@@ -54,12 +55,19 @@ class Config(object):
 # set in the std_imports for a global TESTING at top level scope
     SQLALCHEMY_DATABASE_URI = LOCAL_CACHE_FILE
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+
 try:
+    engine = create_engine(LOCAL_CACHE_FILE , connect_args={"check_same_thread": False},poolclass=StaticPool)
+    #check if exists
+    if not database_exists(LOCAL_CACHE_FILE) or os.path.exists(DATABASE_FILENAME):
+        DATABASE_EXISTS = True
+    else:
+        DATABASE_EXISTS = False        
+    
     PlantsDatabase = Flask(__name__ )
     PlantsDatabase.config.from_object(Config)
     database = SQLAlchemy(PlantsDatabase)
     database.init_app(PlantsDatabase)
-    engine = create_engine(LOCAL_CACHE_FILE , connect_args={"check_same_thread": False},poolclass=StaticPool)
     if TESTING == True:
         database.metadata.clear()
 except Exception:
@@ -157,7 +165,7 @@ def add_plant_to_db(plant_to_add):
     except Exception:
         exc_type, exc_value, exc_tb = sys.exc_info()
         tb = traceback.TracebackException(exc_type, exc_value, exc_tb) 
-        error_message("[-] add_plant_to_db() FAILED \n" + ''.join(tb.format_exception_only()))
+        debug_message("[-] add_plant_to_db() FAILED \n" + ''.join(tb.format_exception_only()))
 
 #########################################################
 ###         INITIALIZE DATABASE TABLES
@@ -188,12 +196,16 @@ test_garden = Garden(name = 'home base',
                      zone = '7a',
                      notes = 'bada-bing bada-boom, big badaboom'
                     )
-try:
-    database.session.add(test_plant)
-    database.session.add(test_garden)
-    database.session.commit()
-except Exception:
-    error_message("[-] Update_db FAILED \n")
+
+if not DATABASE_EXISTS:
+    try:
+        add_plant_to_db(test_plant)
+        add_plant_to_db(test_garden)
+        database.session.commit()
+    except Exception:
+        exc_type, exc_value, exc_tb = sys.exc_info()
+        tb = traceback.TracebackException(exc_type, exc_value, exc_tb) 
+        error_message("[-] Test Commit FAILED \n" + ''.join(tb.format_exception_only()))    
 
 #########################################################
 ###           VERIFY / POPULATE DATABASE
@@ -232,4 +244,8 @@ class ScrapeWikipediaTableForData:
                     add_plant_to_db(plant_entry)
                 #database.session.commit()
 
-plant_data_lookup = ScrapeWikipediaTableForData(sections_to_grab,thing_to_get)
+if DATABASE_EXISTS:
+    plant_data_lookup = ScrapeWikipediaTableForData(sections_to_grab,thing_to_get)
+else:
+    warning_message('[+] Database already exists, skipping creation')
+
