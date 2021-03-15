@@ -20,7 +20,13 @@ try:
 except ImportError as derp:
 	print("[-] NO COLOR PRINTING FUNCTIONS AVAILABLE, Install the Colorama Package from pip")
 	COLORMEQUALIFIED = False
-    
+
+
+def error_printer(message):
+    exc_type, exc_value, exc_tb = sys.exc_info()
+    tb = traceback.TracebackException(exc_type, exc_value, exc_tb) 
+    error_message( message + ''.join(tb.format_exception_only()))            
+
 ##########################
 # Colorization Functions #
 ##########################

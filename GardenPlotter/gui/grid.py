@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 # no python 2 compatibility focus on this...
 from tkinter import *
-from std_imports import *
-from Windows import MainWindow,ConfigurationWindow,PlantListWindow
+from GardenPlotter.std_imports import *
+from GardenPlotter.Windows import MainWindow,ConfigurationWindow,PlantListWindow
 
 # Maximum and default grid size
 MAX_N, DEFAULT_N = 26, 10
@@ -39,9 +39,7 @@ class GardenGridGui:
             #configuration_window    = ConfigurationWindow(self.master,self.config_win_size)
             #plants_list_window      = PlantListWindow(self.master,self.plants_list_window_size)
         except Exception:
-            exc_type, exc_value, exc_tb = sys.exc_info()
-            tb = traceback.TracebackException(exc_type, exc_value, exc_tb) 
-            error_message("[-] Window Initialization FAILED" + ''.join(tb.format_exception_only()))            
+            error_printer("[-] Window Initialization FAILED")
 
     #TODO: 
             # FALLBACK 
@@ -57,4 +55,4 @@ try:
     Garden = GardenGridGui(root, grid_size_n=40)
     root.mainloop()
 except Exception:
-    error_message("[-] Application Initialization FAILED")
+    error_printer("[-] Application Initialization FAILED")

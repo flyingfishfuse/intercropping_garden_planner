@@ -1,7 +1,7 @@
 from tkinter import *
 from tkinter import filedialog
-import database_stuff
-from database_stuff import *
+import GardenPlotter.database.database_stuff
+from GardenPlotter.database.database_stuff import *
 # Maximum and default grid size
 MAX_N, DEFAULT_N = 26, 10
 # The "default" plant for an unfilled grid cell
