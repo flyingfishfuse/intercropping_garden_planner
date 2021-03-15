@@ -5,7 +5,7 @@
 import sys,os
 import pandas
 import traceback
-from std_imports import *
+from GardenPlotter.std_imports import *
 from sqlalchemy import create_engine
 from sqlalchemy.pool import StaticPool
 from flask_sqlalchemy import SQLAlchemy

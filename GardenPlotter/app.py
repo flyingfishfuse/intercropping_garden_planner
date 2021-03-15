@@ -9,11 +9,12 @@ __email__     = 'null@null.com'
 __version__ = '0.1A'
 __license__ = 'GPLv3'
 
+from tkinter import *
+from GardenPlotter.std_imports import error_printer
 import GardenPlotter.gui.grid
-from GardenPlotter.garden import *
-from GardenPlotter.gui.grid import *
-from GardenPlotter.gui.Windows import *
-from GardenPlotter.database.database_stuff import *
+import GardenPlotter.garden
+from GardenPlotter.gui.grid import GardenGridGui
+import GardenPlotter.database.database_stuff
 
     #TODO: 
             # FALLBACK 

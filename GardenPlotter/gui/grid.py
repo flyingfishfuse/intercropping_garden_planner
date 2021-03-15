@@ -1,9 +1,9 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 # no python 2 compatibility focus on this...
-from tkinter import *
-from GardenPlotter.std_imports import *
-from GardenPlotter.Windows import MainWindow,ConfigurationWindow,PlantListWindow
+#from tkinter import *
+from GardenPlotter.std_imports import error_printer
+from GardenPlotter.gui.Windows import MainWindow,ConfigurationWindow,PlantListWindow
 
 # Maximum and default grid size
 MAX_N, DEFAULT_N = 26, 10
@@ -31,11 +31,12 @@ class GardenGridGui:
         self.config_menu_size   = "800x600+200+200"
         plants_list_window_size = '1024x1024+20+20'
         try:       
-            main_window = MainWindow(self.canvas_width_px,
-                                     self.canvas_height_px,
-                                     # interpreter was acting like this wasnt set with
-                                     # positional argument, testing implicit argument
-                                     grid_size_n=self.grid_size_n)
+            main_window = MainWindow(master= self.master,
+                            canvas_width_px = self.canvas_width_px,
+                            canvas_height_px = self.canvas_height_px,
+                            # interpreter was acting like this wasnt set with
+                            # positional argument, testing implicit argument
+                            grid_size_n=self.grid_size_n)
             #configuration_window    = ConfigurationWindow(self.master,self.config_win_size)
             #plants_list_window      = PlantListWindow(self.master,self.plants_list_window_size)
         except Exception:
