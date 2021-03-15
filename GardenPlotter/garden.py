@@ -1,16 +1,12 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 """
-This file contains INSERT STUFF HERE
-This I think is going to be the main file
+
 """
 __author__     = 'Adam Galindo'
 __email__     = 'null@null.com'
 __version__ = '0.1A'
 __license__ = 'GPLv3'
-
-import GardenPlotter.gui.grid
-from GardenPlotter.gui.grid import *
 
 class GardenEntity():
     def __new__(cls) -> Any:
@@ -20,14 +16,15 @@ class GardenEntity():
         pass
 
 class PlantEntity:
-	def __init__(self,plant_data : dict):
-		self.goodneighbors = list
-	
-	def __repr__(self):
-		print(" I AM A : {}".format(self.__name__))
-		#print(self.__name__) 
+    def __init__(self,plant_data : dict):
+        self.goodneighbors = list
+    def __name__(self):
+        return plant_data.get('name')
+    def __repr__(self):
+        print(" I AM A : {}".format(self.__name__))
+        #print(self.__name__) 
 
-    
+
 class IntercroppingRelationships:
     def __new__(cls, *args):
         #put the plants here for now

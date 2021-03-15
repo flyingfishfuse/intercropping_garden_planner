@@ -40,19 +40,3 @@ class GardenGridGui:
             #plants_list_window      = PlantListWindow(self.master,self.plants_list_window_size)
         except Exception:
             error_printer("[-] Window Initialization FAILED")
-
-    #TODO: 
-            # FALLBACK 
-        # TO
-    # TERMINAL
-# ASK IF USER WANTS POP
-
-try:
-    # Set the whole thing running
-    root = Tk()
-    #defaults are 30 cells on a 1024x1024px SVG grid of cells with 5px padding
-    #TODO: add a number entry/slider + "apply" button to change padding px and re-render
-    Garden = GardenGridGui(root, grid_size_n=40)
-    root.mainloop()
-except Exception:
-    error_printer("[-] Application Initialization FAILED")
