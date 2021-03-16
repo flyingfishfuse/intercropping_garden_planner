@@ -8,10 +8,15 @@ MAX_N, DEFAULT_N = 26, 10
 # The "default" plant for an unfilled grid cell
 UNFILLED = '#fff'
 
+import pandas
 from tkinter import *
 from tkinter import filedialog
 #from gui.GardenGridGui import GardenGridGui
 from database.database_stuff import Plants
+
+#lets try to clean up the grid and use numpy?
+import numpy
+
 class MainWindow:
     def __init__(self, 
                  master, 
@@ -40,23 +45,36 @@ class MainWindow:
         self.grid_frame.pack()
 
         # The canvas onto which the grid is drawn.
-        self.canvasframe = Canvas(self.master, 
-                                  width=self.canvas_width_px, 
-                                  height=self.canvas_width_px
-                                  )
+        self.canvasframe = Canvas(self.master, width=self.canvas_width_px,height=self.canvas_width_px)
         self.canvasframe.pack()
 
         # Add the cell rectangles to the grid canvas.
         self.cells = []
 
-        for y_axis_index in range(grid_size_n):
-            for x_axis_index in range(grid_size_n):
-                xpad  = self.pad_px * (x_axis_index+1)
-                ypad  = self.pad_px * (y_axis_index+1) 
-                x1    = xpad + x_axis_index * self.cell_px_width
-                y1    = ypad + y_axis_index * self.cell_px_height
+# I need this for reference
+# pardon the dust, we are redecorating the carpet OFF 
+# the filigreed bacon walls, by refactoring code
+#x =   0 1 2 3 4        y =   0 0 0 0 0
+#      0 1 2 3 4              1 1 1 1 1
+#      0 1 2 3 4              2 2 2 2 2
+#      0 1 2 3 4              3 3 3 3 3
+#      0 1 2 3 4              4 4 4 4 4
+#      
+
+        grid_x = numpy.linspace(0,grid_size_n)
+        grid_y = numpy.linspace(0,grid_size_n)
+        x_coords, y_coords = numpy.meshgrid(grid_x,grid_y,indexing='xy')
+        #grid_container = numpy.array(x_coords,y_coords)
+        coord_map = numpy.array([x_coords,y_coords])
+
+        for y_coord, x_coord in grid_container:
+                #drawing from
+                x1    = x_coord * self.cell_px_width
+                y1    = y_coord * self.cell_px_height
+                #drawing to
                 x2    = x1 + self.cell_px_width
                 y2    = y1 + self.cell_px_height
+                
                 garden_cell = self.canvasframe.create_rectangle(x1, y1, x2, y2, fill = UNFILLED)
                 self.cells.append(garden_cell)
 

@@ -56,8 +56,7 @@ class ScrapeWikipediaTableForData:
             error_printer("[-] WikiScraper FAILEDFAILED")
 
 try:
-    if os.path.exists('/database/plants_info.db') == False:
-        info_message("IT SAYS DB NOT EXIST")
+    if os.path.exists('./database/plants_info.db') == False:
         try:
             PlantDatabase.create_all()
             PlantDatabase.session.commit()
