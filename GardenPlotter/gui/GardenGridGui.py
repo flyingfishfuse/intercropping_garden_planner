@@ -54,9 +54,9 @@ class GardenGridGui:
                                 palette_cell_px_y = 60,
                                 padding_px        = 5
                             )
-            plants_info    = PlantInformationWindow(self.master,
-                                self.plant_info_size
-                            )
+            #plants_info    = PlantInformationWindow(self.master,
+            #                    self.plant_info_size
+            #                )
             #configuration_window    = ConfigurationWindow.ConfigurationWindow(self.master,self.config_win_size)
             #aplants_list_window      = PlantListWindow(self.master,self.plants_list_window_size)
         except Exception:

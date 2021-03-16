@@ -23,6 +23,11 @@ DATABASE_FILENAME  = DATABASE + '.db'
 sections_to_grab = ['Vegetables', 'Fruit', 'Herbs', 'Flowers', 'Other']
 thing_to_get = 'https://en.wikipedia.org/wiki/List_of_companion_plants'
 
+if not database_exists(LOCAL_CACHE_FILE) or os.path.exists(DATABASE_FILENAME):
+    DATABASE_EXISTS = True
+else:
+    DATABASE_EXISTS = False        
+    
 class Config(object):
 # TESTING = True
 # set in the std_imports for a global TESTING at top level scope
@@ -31,12 +36,6 @@ class Config(object):
 
 try:
     engine = create_engine(LOCAL_CACHE_FILE , connect_args={"check_same_thread": False},poolclass=StaticPool)
-    #check if exists
-    if not database_exists(LOCAL_CACHE_FILE) or os.path.exists(DATABASE_FILENAME):
-        DATABASE_EXISTS = True
-    else:
-        DATABASE_EXISTS = False        
-    
     PlantsGUIDatabase = Flask(__name__ )
     PlantsGUIDatabase.config.from_object(Config)
     PlantDatabase = SQLAlchemy(PlantsGUIDatabase)
