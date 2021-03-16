@@ -66,7 +66,7 @@ class MainWindow:
                 #drawing to
                 x2    = x1 + self.cell_px_width
                 y2    = y1 + self.cell_px_height
-                
+                # zort!
                 garden_cell = self.canvasframe.create_rectangle(x1, y1, x2, y2, fill = UNFILLED)
                 self.cells.append(garden_cell)
 
