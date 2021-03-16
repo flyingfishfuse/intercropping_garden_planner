@@ -10,8 +10,9 @@ UNFILLED = '#fff'
 
 from tkinter import *
 from tkinter import filedialog
+from GardenPlotter.gui.GardenGridGui import GardenGridGui
 from GardenPlotter.database.database_stuff import Plants
-class MainWindow:
+class MainWindow(GardenGridGui):
     def __init__(self, 
                  master, 
                  canvas_width_px : int, 
@@ -27,11 +28,8 @@ class MainWindow:
         self.grid_size_n       = grid_size_n 
         self.pad_px            = 5
         self.pad_1px           = 1
-        self.palette_height_px = 40
         self.canvas_width_px   = canvas_width_px
         self.canvas_px_height  = canvas_height_px
-        #palette is as wide as the main canvas minus a pad on either side
-        self.palette_width_px  = self.canvas_width_px - 2 * self.pad_px
         # Padding stuff: xsize, ysize is the cell size in pixels (without pad).
         # cell pixel width with no padding
         self.cell_px_width     = (self.canvas_width_px / self.grid_size_n ) -(self.pad_1px * self.grid_size_n )
@@ -57,8 +55,8 @@ class MainWindow:
                 ypad  = self.pad_px * (y_axis_index+1) 
                 x1    = xpad + x_axis_index * self.cell_px_width
                 y1    = ypad + y_axis_index * self.cell_px_height
-                x2    = x1 + self.cell_px_width ,
-                y2    = y1 + self.cell_px_height ,
+                x2    = x1 + self.cell_px_width
+                y2    = y1 + self.cell_px_height
                 garden_cell = self.canvasframe.create_rectangle(x1, y1, x2, y2, fill = UNFILLED)
                 self.cells.append(garden_cell)
 

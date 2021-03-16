@@ -1,10 +1,11 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 from tkinter import *
+from GardenPlotter.gui.GardenGridGui import GardenGridGui
 from GardenPlotter.database.database_stuff import Plants
-from GardenPlotter.gui.Windows.MainWindow import MainWindow
+#from GardenPlotter.gui.Windows.MainWindow import MainWindow
 
-class PlantsPalette(MainWindow):
+class PlantsPalette(GardenGridGui):
     def __init__(self, 
                  master, 
                  palette_cells_x  ,
