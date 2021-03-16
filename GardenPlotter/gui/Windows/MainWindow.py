@@ -9,6 +9,7 @@ MAX_N, DEFAULT_N = 26, 10
 UNFILLED = '#fff'
 
 import pandas
+import itertools
 from tkinter import *
 from tkinter import filedialog
 #from gui.GardenGridGui import GardenGridGui
@@ -51,13 +52,19 @@ class MainWindow:
         # Add the cell rectangles to the grid canvas.
         self.cells = []
         # Welcome to the grid
-        grid_x = numpy.linspace(0,grid_size_n)
-        grid_y = numpy.linspace(0,grid_size_n)
+        grid_x = range(grid_size_n) # numpy.linspace(0,grid_size_n)
+        grid_y = range(grid_size_n) # numpy.linspace(0,grid_size_n)
+        #do I even need this? See below
         x_coordinates, y_coordinates = numpy.meshgrid(grid_x,grid_y,indexing='xy')
-        coord_map = numpy.array([x_coordinates,y_coordinates])
-        #makes an array of all points in the grid to feed to the drawing
-        coordinate_array = []
-        for cell_x_position ,cell_y_position in coord_map[0],coord_map[1]:
+        #this is here for reasons?
+        numpy_coord_map = numpy.array([x_coordinates,y_coordinates])
+#makes an array of all points in the grid to feed to the drawing
+    #
+    #This might be better for this
+        #
+        #coordinate_array = itertools.zip_longest(grid_x,grid_y)
+        coordinate_array  = itertools.zip_longest(numpy_coord_map[0],numpy_coord_map[1])
+        for cell_x_position ,cell_y_position in coordinate_array:
             coordinate_array.append((cell_x_position,cell_y_position))
         for (x_coord, y_coord) in coordinate_array:
                 #drawing from
