@@ -7,54 +7,32 @@ from GardenPlotter.gui.Windows.MainWindow import MainWindow
 class PlantsPalette(MainWindow):
     def __init__(self, 
                  master, 
-                 palette_cells_column  : int,
-                 palette_cells_y    : int,
-                 palette_cells_px_w : int,
-                 palette_cells_px_h : int
+                 palette_cells_x  ,
+                 palette_cells_y  ,
+                 palette_cell_px_x,
+                 palette_cell_px_y,
+                 padding_px      
                 ):
         self.master = master
         self.master.title("Plant selection")
-        self.window_size_x = palette_cells_column * palette_cells_px_w
-        self.window_size_y = palette_cells_px_h * palette_cells_y
-        self.master.geometry() 
-        self.palette_canvas = Canvas(self.master, 
-                                     width  = self.canvas_width_px,
-                                     height = self.palette_height_px
-                                    )
-        self.palette_canvas.pack()
-        self.selected_plant_index = 0
-        self.select_plant(self.selected_plant_index)
+        self.window_size_x = 1024
+        self.window_size_y = palette_cells_y * palette_cell_px_y + (padding_px * palette_cells_y)
+        self.master.geometry(self.window_size_x,self.window_size_y) 
+        self.plants_palette   = []
 
-        # Add the plant selection rectangles to the palette canvas.
-        self.palette_plant_boxes = []
+        # add plants from database to list
         for each_plant in Plants.query.all():
-            self.plants_palette.append(each_plant.name)
+            self.plants_palette.append(each_plant)
 
-        self.num_plants_palette = len(self.plants_palette)
+        for each_plant_button in self.plants_palette:
+        #not implmented yet
+          #button_image = PhotoImage(file=Plants.plant_button_image)
+            # compound options are bottom, center, left, none, right, or top
+            plant_button = Button(self.master,
+                                  text=each_plant_button.name,
+                                  compound="top")
+            plant_button.pack()
 
-        for plant_num in range(self.num_plants_palette):
-            palette_square_x = self.pad_px * (plant_num + 1) + (plant_num * self.palette_width_px)
-            palette_square_y = self.pad_px
-            rectangle = self.palette_canvas.create_rectangle(palette_square_x, 
-                                            palette_square_y,
-                                            palette_square_x + self.palette_width_px,
-                                            palette_square_y + self.palette_height_px,
-                                            # change to image and link to action for plant selection 
-                                            # maybe as a stateful thing
-                                            fill = self.plants_palette[plant_num]
-                                        )
-            self.palette_rects.append(rectangle)
-        # selected_plant_index is the index of the currently selected plant.
-        self.selected_plant_index = 0
-        self.select_plant(self.selected_plant_index)
-        self.show_widgets()
-
-        #self.button_image = PhotoImage(file=plant_button_image)
-        # compound options are bottom, center, left, none, right, or top
-        #button_qwer = tk.Button(root, image=imagetest, text="asdfasdf", compound="top", command=print_hello)
-
-
-    def show_widgets(self):
         self.frame = Frame(self.master)
         self.quit  = Button(self.frame, text=f"Quit this window" ,command=self.close_window)
         self.quit.pack()
@@ -62,14 +40,12 @@ class PlantsPalette(MainWindow):
         self.label.pack()
         self.frame.pack()
 
-    #def palette_click_callback(event):
-    #    """Function called when someone clicks on the palette canvas."""
-        # Bind the palette click callback function to the left mouse button
-        # press event on the palette canvas.
-    #self.palette_canvas.bind('<ButtonPress-1>', palette_click_callback)
+    def plant_button(self):
+        pass
 
     def select_plant(self, plant_clicky_clicky):
-        """Select the plant indexed at i in the plants_palette list."""
+        """Select the plant indexed at plant_clicky_clicky in the plants_palette list."""
         pass
+
     def close_window(self):
         self.master.destroy()

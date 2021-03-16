@@ -1,0 +1,34 @@
+    def load_image(self):
+        """Load an image from a provided file."""
+
+        def _coords_to_index(coords):
+            """
+            Translate from the provided coordinate (e.g. 'A1') to an index
+            into the grid cells list.
+            """
+
+            x_axis_index = ord(coords[0])-65
+            y_axis_index = self.grid_size_n - int(coords[1:])
+            return y_axis_index*self.grid_size_n + x_axis_index
+
+        self.filename = filedialog.askopenfilename(filetypes=(
+                ('Grid files', '.grid'),
+                ('Text files', '.txt'),
+                ('All files', '*.*')))
+        if not self.filename:
+            return
+        print('Loading file from', self.filename)
+        self.clear_grid()
+        # Open the file and read the image, setting the cell plants as we go.
+        with open(self.filename) as fi:
+            for line in fi.readlines():
+                line = line.strip()
+                if not line or line.startswith('-'):
+                    continue
+                coords = line.split(',')
+                if not coords:
+                    continue
+                for coord in coords:
+                    i = _coords_to_index(coord.strip())
+                    self.canvasframe.itemconfig(self.cells[i], fill=this_plant)
+

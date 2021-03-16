@@ -9,6 +9,7 @@ MAX_N, DEFAULT_N = 26, 10
 UNFILLED = '#fff'
 
 from tkinter import *
+from tkinter import filedialog
 from GardenPlotter.database.database_stuff import Plants
 class MainWindow:
     def __init__(self, 
@@ -40,10 +41,6 @@ class MainWindow:
         grid_frame = Frame(self.master)
         grid_frame.pack()
 
-        self.palette_canvas = Canvas(self.master, 
-                                     width  = self.canvas_width_px,
-                                     height = self.palette_height_px
-                                    )
         # The canvas onto which the grid is drawn.
         self.canvasframe = Canvas(self.master, 
                                   width=self.canvas_width_px, 
@@ -66,33 +63,25 @@ class MainWindow:
                 self.cells.append(garden_cell)
 
         # Load and save image buttons
-        button_load = Button(grid_frame,text='open',command=self.load_image)
-        button_load.pack(side=RIGHT,padx=self.pad_px,pady=self.pad_px)
-        button_save = Button(grid_frame,text='save',command=self.save_by_plant)
-        button_save.pack(side=RIGHT,padx=self.pad_px,pady=self.pad_px)
+#        button_load = Button(grid_frame,text='open',command=self.load_image)
+#        button_load.pack(side=RIGHT,padx=self.pad_px,pady=self.pad_px)
+#        button_save = Button(grid_frame,text='save',command=self.save_by_plant)
+#        button_save.pack(side=RIGHT,padx=self.pad_px,pady=self.pad_px)
         # Add a button to clear the grid
         button_clear = Button(grid_frame,text='clear',command=self.clear_grid)
         button_clear.pack(side=LEFT,padx=self.pad_px,pady=self.pad_px)
         
-        def autofill_grid(event):
-            pass
-        
-        button_autofill = Button(grid_frame,text='make_garden_magic.exe', command= self.autofill_grid)
-        button_autofill.pack(side=RIGHT,padx=self.pad_px,pady=self.pad_px)
+#        def autofill_grid(event):
+#            pass
 
-        def create_button(self, text, _class):
-            "Button that creates a new window"
-            Button(
-            self.grid_frame, text=text,
-            command=lambda: self.new_window(_class)).pack()
-
-        def new_window(self, _class):
-            self.win = Toplevel(self.master)
-            _class(self.win)
+#        button_autofill = Button(grid_frame,text='make_garden_magic.exe', command= self.autofill_grid)
+#        button_autofill.pack(side=RIGHT,padx=self.pad_px,pady=self.pad_px)
 
         def close_window(self):
             self.master.destroy()
 
+        close_window = Button(grid_frame,text='close window',command=close_window)
+        close_window.pack(side=LEFT,padx=self.pad_px,pady=self.pad_px)
 
     def _get_cell_coords(self, i):
         """Get the <letter><number> coordinates of the cell indexed at i."""
@@ -155,43 +144,6 @@ class MainWindow:
         for cell in self.cells:
             self.canvasframe.itemconfig(cell, fill=UNFILLED)
         
-    def load_image(self):
-        """Load an image from a provided file."""
-
-        def _coords_to_index(coords):
-            """
-            Translate from the provided coordinate (e.g. 'A1') to an index
-            into the grid cells list.
-            """
-
-            x_axis_index = ord(coords[0])-65
-            y_axis_index = self.grid_size_n - int(coords[1:])
-            return y_axis_index*self.grid_size_n + x_axis_index
-
-        self.filename = filedialog.askopenfilename(filetypes=(
-                ('Grid files', '.grid'),
-                ('Text files', '.txt'),
-                ('All files', '*.*')))
-        if not self.filename:
-            return
-        print('Loading file from', self.filename)
-        self.clear_grid()
-        # Open the file and read the image, setting the cell plants as we go.
-        with open(self.filename) as fi:
-            for line in fi.readlines():
-                line = line.strip()
-                if line in self.plants_palette:
-                    this_plant = line
-                    continue
-                if not line or line.startswith('-'):
-                    continue
-                coords = line.split(',')
-                if not coords:
-                    continue
-                for coord in coords:
-                    i = _coords_to_index(coord.strip())
-                    self.canvasframe.itemconfig(self.cells[i], fill=this_plant)
-
 
 
 

@@ -38,14 +38,24 @@ class GardenGridGui:
         self.config_menu_size   = "800x600+200+200"
         plants_list_window_size = '1024x1024+20+20'
         try:       
-            main_window = MainWindow(master= self.master,
+            main_window = MainWindow.MainWindow(master= self.master,
                             canvas_width_px = self.canvas_width_px,
                             canvas_height_px = self.canvas_height_px,
                             # interpreter was acting like this wasnt set with
                             # positional argument, testing implicit argument
                             grid_size_n=self.grid_size_n)
-            plants_palette = PlantsPalette(master = self.master)
-            #configuration_window    = ConfigurationWindow(self.master,self.config_win_size)
-            #plants_list_window      = PlantListWindow(self.master,self.plants_list_window_size)
+
+            plants_palette = PlantsPalette.PlantsPalette(self.master,
+                             palette_cells_x   = 10,
+                             palette_cells_y   = 4,
+                             palette_cell_px_x = 80,
+                             palette_cell_px_y = 60,
+                             padding_px        = 5
+                )
+            plants_information = PlantsInformation.PlantInformationWindow(
+
+            )
+            #configuration_window    = ConfigurationWindow.ConfigurationWindow(self.master,self.config_win_size)
+            #aplants_list_window      = PlantListWindow(self.master,self.plants_list_window_size)
         except Exception:
             error_printer("[-] Window Initialization FAILED")
