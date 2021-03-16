@@ -18,7 +18,7 @@ class PlantsPalette:
         self.master.title("Plant selection")
         self.window_size_x = 1024
         self.window_size_y = palette_cells_y * palette_cell_px_y + (padding_px * palette_cells_y)
-        self.master.geometry(self.window_size_x,self.window_size_y) 
+        self.master.geometry("{}x{}+20+20".format(self.window_size_x,self.window_size_y))
         self.plants_palette   = []
 
         # add plants from database to list

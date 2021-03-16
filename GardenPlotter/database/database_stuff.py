@@ -5,17 +5,17 @@
 import sys,os
 import pandas
 import traceback
+from sqlalchemy_utils import database_exists
+
 from std_imports import error_message,info_message, TESTING,debug_message
 from sqlalchemy import create_engine
 from sqlalchemy.pool import StaticPool
 from flask_sqlalchemy import SQLAlchemy
 from flask import Flask, render_template, Response, Request ,Config
-from sqlalchemy_utils import database_exists,create_database
 
 ################################################################################
 ##############                      CONFIG                     #################
 ################################################################################
-
 TEST_DB            = 'sqlite://'
 DATABASE           = "plants_info"
 LOCAL_CACHE_FILE   = 'sqlite:///' + DATABASE + ".db"
@@ -23,11 +23,11 @@ DATABASE_FILENAME  = DATABASE + '.db'
 sections_to_grab = ['Vegetables', 'Fruit', 'Herbs', 'Flowers', 'Other']
 thing_to_get = 'https://en.wikipedia.org/wiki/List_of_companion_plants'
 
-if not database_exists(LOCAL_CACHE_FILE) or os.path.exists(DATABASE_FILENAME):
+if database_exists(LOCAL_CACHE_FILE) or os.path.exists(DATABASE_FILENAME):
     DATABASE_EXISTS = True
 else:
     DATABASE_EXISTS = False        
-    
+  
 class Config(object):
 # TESTING = True
 # set in the std_imports for a global TESTING at top level scope

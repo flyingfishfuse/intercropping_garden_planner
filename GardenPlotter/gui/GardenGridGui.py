@@ -46,7 +46,9 @@ class GardenGridGui:
                             # positional argument, testing implicit argument
                             grid_size_n=self.grid_size_n
                         )
-
+        except Exception:
+            error_printer("[-] MAIN Window Initialization FAILED")
+        try:
             plants_palette = PlantsPalette(self.master,
                                 palette_cells_x   = 10,
                                 palette_cells_y   = 4,
@@ -60,4 +62,4 @@ class GardenGridGui:
             #configuration_window    = ConfigurationWindow.ConfigurationWindow(self.master,self.config_win_size)
             #aplants_list_window      = PlantListWindow(self.master,self.plants_list_window_size)
         except Exception:
-            error_printer("[-] Window Initialization FAILED")
+            error_printer("[-] PALETTE Window Initialization FAILED")

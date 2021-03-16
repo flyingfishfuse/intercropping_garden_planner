@@ -36,8 +36,8 @@ class MainWindow:
         self.cell_px_pad       = self.cell_px_width + self.pad_1px
         # cell pixel height no padding
         self.cell_px_height    = (self.canvas_px_height - self.cell_px_pad) / self.grid_size_n
-        grid_frame = Frame(self.master)
-        grid_frame.pack()
+        #self.grid_frame        = Frame(self.master)
+        #self.grid_frame.pack()
 
         # The canvas onto which the grid is drawn.
         self.canvasframe = Canvas(self.master, 
@@ -66,7 +66,7 @@ class MainWindow:
 #        button_save = Button(grid_frame,text='save',command=self.save_by_plant)
 #        button_save.pack(side=RIGHT,padx=self.pad_px,pady=self.pad_px)
         # Add a button to clear the grid
-        button_clear = Button(grid_frame,text='clear',command=self.clear_grid)
+        button_clear = Button(self.canvasframe,text='clear',command=self.clear_grid)
         button_clear.pack(side=LEFT,padx=self.pad_px,pady=self.pad_px)
         
 #        def autofill_grid(event):
@@ -75,11 +75,11 @@ class MainWindow:
 #        button_autofill = Button(grid_frame,text='make_garden_magic.exe', command= self.autofill_grid)
 #        button_autofill.pack(side=RIGHT,padx=self.pad_px,pady=self.pad_px)
 
-        def close_window(self):
-            self.master.destroy()
+    def close_window(self):
+        self.master.destroy()
 
-        close_window = Button(grid_frame,text='close window',command=close_window)
-        close_window.pack(side=LEFT,padx=self.pad_px,pady=self.pad_px)
+    close_window = Button(grid_frame,text='close window',command=close_window)
+    close_window.pack(side=LEFT,padx=self.pad_px,pady=self.pad_px)
 
     def _get_cell_coords(self, i):
         """Get the <letter><number> coordinates of the cell indexed at i."""
