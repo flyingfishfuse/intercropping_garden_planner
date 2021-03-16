@@ -12,7 +12,7 @@ from tkinter import *
 from tkinter import filedialog
 #from gui.GardenGridGui import GardenGridGui
 from database.database_stuff import Plants
-class MainWindow(GardenGridGui):
+class MainWindow:
     def __init__(self, 
                  master, 
                  canvas_width_px : int, 

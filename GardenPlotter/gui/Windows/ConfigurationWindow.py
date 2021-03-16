@@ -1,4 +1,5 @@
-class ConfigurationWindow(MainWindow):
+from tkinter import *
+class ConfigurationWindow:
 
     def __init__(self, master):
         self.master = master
@@ -11,7 +12,7 @@ class ConfigurationWindow(MainWindow):
         self.frame = Frame(self.master)
         self.quit_button = Button(self.frame, text=f"Quit this window",command=self.close_window)
         self.quit_button.pack()
-        self.create_button("Open Plant list database", PlantListWindow)
+        #self.create_button("Open Plant list database", PlantListWindow)
         self.frame.pack()
 
     def close_window(self):

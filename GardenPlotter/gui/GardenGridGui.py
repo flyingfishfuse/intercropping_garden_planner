@@ -6,9 +6,11 @@ from tkinter import filedialog
 import database.database_stuff
 from database.database_stuff import *
 from std_imports import error_printer
-from gui.Windows import PlantsInformation
-from gui.Windows import MainWindow,ConfigurationWindow
-from gui.Windows import PlantListWindow,PlantsPalette
+from gui.Windows.PlantsInformation import PlantInformationWindow
+from gui.Windows.MainWindow import MainWindow
+from ConfigurationWindow import ConfigurationWindow
+from gui.Windows.PlantListWindow import PlantListWindow
+from giu.Windows.PlantsPalette import PlantsPalette
 
 # Maximum and default grid size
 MAX_N, DEFAULT_N = 26, 10

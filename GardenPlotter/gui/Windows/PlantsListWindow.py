@@ -1,5 +1,5 @@
 from tkinter import *
-class PlantListWindow(MainWindow):
+class PlantListWindow:
     def __init__(self, master,size):
         self.master = master
         self.master.title("All my Plants")
