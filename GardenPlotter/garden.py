@@ -9,9 +9,9 @@ __version__ = '0.1A'
 __license__ = 'GPLv3'
 
 class GardenEntity():
-    def __new__(cls) -> Any:
+    def __new__(cls):
         pass
-    def __init__(self) -> None:
+    def __init__(self):
         self.hemisphere = 'north'
         pass
 

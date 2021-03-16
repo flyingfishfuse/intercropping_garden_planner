@@ -11,7 +11,8 @@ Working on getting the grid to pop up ... no errors but it's not working!!! ARRR
 
 Once the window draws and the code is tied together, I will package it up for everyone to use
 on any computer
-
+ - Will have variable sizing/grouping ofr individual cells in the grid, e.g.
+   1 cell can be a row of corn 4-wide or a single spinach? maybe?
  - Will include position of sun at "x" time of day / angle of light / shadow
  - Companion "groups" , E.g. Three/Four Sisters, Per Cell
  - other stuff I guess. I am trying to grow food here lol.

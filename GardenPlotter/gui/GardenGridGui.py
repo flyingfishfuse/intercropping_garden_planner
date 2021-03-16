@@ -1,16 +1,14 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
-# no python 2 compatibility focus on this...
 #from tkinter import *
 from tkinter import *
 from tkinter import filedialog
 import database.database_stuff
 from database.database_stuff import *
-from gui.Windows import *
 from std_imports import error_printer
+from gui.Windows import PlantsInformation
 from gui.Windows import MainWindow,ConfigurationWindow
 from gui.Windows import PlantListWindow,PlantsPalette
-from gui.Windows import PlantsInformation
 
 # Maximum and default grid size
 MAX_N, DEFAULT_N = 26, 10
@@ -36,6 +34,7 @@ class GardenGridGui:
         self.palette_height_px  = self.canvas_height_px * (1/5)
         #abstractify this
         self.config_menu_size   = "800x600+200+200"
+        self.plant_info_size    = "800x600+200+200"
         plants_list_window_size = '1024x1024+20+20'
         try:       
             main_window = MainWindow.MainWindow(master= self.master,
@@ -52,7 +51,8 @@ class GardenGridGui:
                              palette_cell_px_y = 60,
                              padding_px        = 5
                 )
-            plants_information = PlantsInformation.PlantInformationWindow(
+            plants_information = PlantsInformation.PlantInformationWindow(self.master,
+                            self.plant_info_size
 
             )
             #configuration_window    = ConfigurationWindow.ConfigurationWindow(self.master,self.config_win_size)

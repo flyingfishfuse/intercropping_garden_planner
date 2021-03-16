@@ -1,11 +1,11 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 from tkinter import *
-from gui.GardenGridGui import GardenGridGui
+#from gui.GardenGridGui import GardenGridGui
 from database.database_stuff import Plants
 #from gui.Windows.MainWindow import MainWindow
 
-class PlantsPalette(GardenGridGui):
+class PlantsPalette:
     def __init__(self, 
                  master, 
                  palette_cells_x  ,

@@ -1,4 +1,6 @@
-class PlantInformationWindow(MainWindow):
+from tkinter import *
+
+class PlantInformationWindow:
     def __init__(self, master, size, plant_to_display):
         self.master = master
         self.master.title("Plant Information")

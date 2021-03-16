@@ -5,7 +5,7 @@
 import sys,os
 import pandas
 import traceback
-from GardenPlotter.std_imports import *
+from std_imports import error_message,info_message, TESTING,debug_message
 from sqlalchemy import create_engine
 from sqlalchemy.pool import StaticPool
 from flask_sqlalchemy import SQLAlchemy
@@ -169,49 +169,13 @@ test_garden = Garden(name = 'home base',
                      zone = '7a',
                      notes = 'bada-bing bada-boom, big badaboom'
                     )
-
 if not DATABASE_EXISTS:
     try:
         add_plant_to_db(test_plant)
         add_plant_to_db(test_garden)
         database.session.commit()
+        info_message("[+] Test Commit SUCESSFUL, Continuing!")
     except Exception:
         exc_type, exc_value, exc_tb = sys.exc_info()
         tb = traceback.TracebackException(exc_type, exc_value, exc_tb) 
         error_message("[-] Test Commit FAILED \n" + ''.join(tb.format_exception_only()))    
-
-#########################################################
-###           VERIFY / POPULATE DATABASE
-#########################################################
-class ScrapeWikipediaTableForData:
-    def __init__(self,sections_to_grab, thing_to_get):
-        self.sections_to_grab = sections_to_grab
-        self.thing_to_get     = thing_to_get
-        self.dataframes       = pandas.read_html(self.thing_to_get)
-        for dataframe in self.dataframes:
-            if dataframe.columns[0][0] in self.sections_to_grab:
-                dataframe.columns = ['name','scientific_name','helps','helped_by',
-                                'attracts_insects','repels_insects','bad_for','notes']
-                for row in range(0, len(dataframe.index)):
-                    if dataframe.iloc[row]['name'] == 'Common name':
-                        warning_message("[-] PANDAS - Table Header discarded from rows")
-                    else :
-                        plant_entry = Plants(plant_type  = dataframe.columns[0][0],
-                                        name            = dataframe.iloc[row]['name'],
-                                        scientific_name = dataframe.iloc[row]['scientific_name'],
-                                        helps           = dataframe.iloc[row]['helps'],
-                                        helped_by       = dataframe.iloc[row]['helped_by'],
-                                        attracts_insects= dataframe.iloc[row]['attracts_insects'],
-                                        repels_insects  = dataframe.iloc[row]['repels_insects'],
-                                        bad_for         = dataframe.iloc[row]['bad_for'],
-                                        notes           = dataframe.iloc[row]['notes'],
-                                        )
-                    #database.session.add(plant_entry)
-                    add_plant_to_db(plant_entry)
-                #database.session.commit()
-
-if DATABASE_EXISTS:
-    plant_data_lookup = ScrapeWikipediaTableForData(sections_to_grab,thing_to_get)
-else:
-    warning_message('[+] Database already exists, skipping creation')
-

@@ -10,7 +10,7 @@ UNFILLED = '#fff'
 
 from tkinter import *
 from tkinter import filedialog
-from gui.GardenGridGui import GardenGridGui
+#from gui.GardenGridGui import GardenGridGui
 from database.database_stuff import Plants
 class MainWindow(GardenGridGui):
     def __init__(self, 
