@@ -1,0 +1,53 @@
+
+    def palette_click_callback(event):
+        """Function called when someone clicks on the palette canvas."""
+        click_loc_x = event.x
+        click_loc_y = event.y
+        # Did the user click a plant from the palette?
+        if self.palette_pad_px < click_loc_y < self.palette_height_px + self.palette_pad_px:
+            # Index of the selected palette rectangle (plus padding)
+            palette_cell_selected = click_loc_x // (self.palette_width_px + self.palette_pad_px)
+            # click_loc_x-position with respect to the palette rectangle left edge
+            xp = click_loc_x - palette_cell_selected*(self.palette_width_px + self.palette_pad_px) - self.palette_pad_px
+            # Is the index valid and the click within the rectangle?
+            if palette_cell_selected < self.num_plants_palette and 0 < xp < self.palette_width_px:
+                self.select_plant(palette_cell_selected)
+    # Bind the palette click callback function to the left mouse button
+    # press event on the palette canvas.
+    self.palette_canvas.bind('<ButtonPress-1>', palette_click_callback)
+
+        def w_click_callback(event):
+            """Function called when someone clicks on the grid canvas."""
+            click_loc_x, click_loc_y = event.x, event.y
+
+            # Did the user click a cell in the grid?
+            # Indexes into the grid of cells (including padding)
+            x_axis_index = int(click_loc_x // (self.cell_px_width  + self.pad_px))
+            y_axis_index = int(click_loc_y // (self.cell_px_height + self.pad_px))
+            xc = click_loc_x - x_axis_index*(self.cell_px_width  + self.pad_px) - self.pad_px
+            yc = click_loc_y - y_axis_index*(self.cell_px_height + self.pad_px) - self.pad_px
+            if x_axis_index < grid_size_n and y_axis_index < grid_size_n and 0 < xc < self.cell_px_width  and 0 < yc < self.cell_px_height:
+                i = y_axis_index*grid_size_n+x_axis_index
+                self.canvasframe.itemconfig(self.cells[i], fill=self.plants_palette[self.selected_plant_index])
+        # Bind the grid click callback function to the left mouse button
+        # press event on the grid canvas.
+        self.canvasframe.bind('<ButtonPress-1>', w_click_callback)
+
+    def select_plant(self, i):
+        """Select the plant indexed at i in the plants_palette list."""
+
+        self.palette_canvas.itemconfig(self.palette_rects[self.selected_plant_index],
+                                       outline='black', width=1)
+        self.selected_plant_index = i
+        self.palette_canvas.itemconfig(self.palette_rects[self.selected_plant_index],
+                                       outline='black', width=5)
+    def _get_cell_coords(self, i):
+        """Get the <letter><number> coordinates of the cell indexed at i."""
+
+        # The horizontal axis is labelled A, B, C, ... left-to-right;
+        # the vertical axis is labelled 1, 2, 3, ... bottom-to-top.
+        y_axis_index, x_axis_index = divmod(i, self.grid_size_n)
+        return '{}{}'.format(chr(x_axis_index+65), self.grid_size_n-y_axis_index)
+
+    def close_window(self):
+        self.master.destroy()

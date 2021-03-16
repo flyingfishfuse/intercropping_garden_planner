@@ -2,8 +2,15 @@
 # -*- coding: utf-8 -*-
 # no python 2 compatibility focus on this...
 #from tkinter import *
+from tkinter import *
+from tkinter import filedialog
+import GardenPlotter.database.database_stuff
+from GardenPlotter.database.database_stuff import *
+from GardenPlotter.gui.Windows import *
 from GardenPlotter.std_imports import error_printer
-from GardenPlotter.gui.Windows import MainWindow,ConfigurationWindow,PlantListWindow
+from GardenPlotter.gui.Windows import MainWindow,ConfigurationWindow,
+from GardenPlotter.gui.Windows import PlantListWindow,PlantsPalette
+from GardenPlotter.gui.Windows import PlantsInformation
 
 # Maximum and default grid size
 MAX_N, DEFAULT_N = 26, 10
@@ -37,6 +44,7 @@ class GardenGridGui:
                             # interpreter was acting like this wasnt set with
                             # positional argument, testing implicit argument
                             grid_size_n=self.grid_size_n)
+            plants_palette = PlantsPalette(master = self.master)
             #configuration_window    = ConfigurationWindow(self.master,self.config_win_size)
             #plants_list_window      = PlantListWindow(self.master,self.plants_list_window_size)
         except Exception:

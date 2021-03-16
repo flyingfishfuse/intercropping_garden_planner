@@ -1,12 +1,15 @@
-from tkinter import *
-from tkinter import filedialog
-import GardenPlotter.database.database_stuff
-from GardenPlotter.database.database_stuff import *
+#from tkinter import *
+#from tkinter import filedialog
+#import GardenPlotter.database.database_stuff
+#from GardenPlotter.database.database_stuff import *
+#from GardenPlotter.gui.Windows import *
 # Maximum and default grid size
 MAX_N, DEFAULT_N = 26, 10
 # The "default" plant for an unfilled grid cell
 UNFILLED = '#fff'
-,
+
+from tkinter import *
+from GardenPlotter.database.database_stuff import Plants
 class MainWindow:
     def __init__(self, 
                  master, 
@@ -30,45 +33,17 @@ class MainWindow:
         self.palette_width_px  = self.canvas_width_px - 2 * self.pad_px
         # Padding stuff: xsize, ysize is the cell size in pixels (without pad).
         # cell pixel width with no padding
-        self.cell_px_width     = (self.canvas_width_px / self.grid_size_n ) \
-                                -(self.pad_1px * self.grid_size_n )
+        self.cell_px_width     = (self.canvas_width_px / self.grid_size_n ) -(self.pad_1px * self.grid_size_n )
         self.cell_px_pad       = self.cell_px_width + self.pad_1px
         # cell pixel height no padding
         self.cell_px_height    = (self.canvas_px_height - self.cell_px_pad) / self.grid_size_n
-
-        frame = Frame(self.master)
-        frame.pack()
+        grid_frame = Frame(self.master)
+        grid_frame.pack()
 
         self.palette_canvas = Canvas(self.master, 
                                      width  = self.canvas_width_px,
                                      height = self.palette_height_px
                                     )
-        self.palette_canvas.pack()
-
-        # Add the plant selection rectangles to the palette canvas.
-        self.palette_plant_boxes = []
-        for each_plant in Plants.query.all():
-            self.plants_palette.append(each_plant.name)
-
-        self.num_plants_palette = len(self.plants_palette)
-
-        for plant_num in range(self.num_plants_palette):
-            palette_square_x = self.pad_px * (plant_num + 1) + (plant_num * self.palette_width_px)
-            palette_square_y = self.pad_px
-            rectangle = self.palette_canvas.create_rectangle(palette_square_x, 
-                                            palette_square_y,
-                                            palette_square_x + self.palette_width_px,
-                                            palette_square_y + self.palette_height_px,
-                                            # change to image and link to action for plant selection 
-                                            # maybe as a stateful thing
-                                            fill = self.plants_palette[plant_num]
-                                        )
-            self.palette_rects.append(rectangle)
-        
-        # selected_plant_index is the index of the currently selected plant.
-        self.selected_plant_index = 0
-        self.select_plant(self.selected_plant_index)
-
         # The canvas onto which the grid is drawn.
         self.canvasframe = Canvas(self.master, 
                                   width=self.canvas_width_px, 
@@ -89,24 +64,26 @@ class MainWindow:
                 y2    = y1 + self.cell_px_height ,
                 garden_cell = self.canvasframe.create_rectangle(x1, y1, x2, y2, fill = UNFILLED)
                 self.cells.append(garden_cell)
-        # Load and save image buttons
-        button_load = Button(frame,text='open',command=self.load_image)
-        button_load.pack(side=RIGHT,padx=self.pad_px,pady=self.pad_px)
-        button_save = Button(frame,text='save',command=self.save_by_plant)
-        button_save.pack(side=RIGHT,padx=self.pad_px,pady=self.pad_px)
 
-        button_autofill = Button(frame,text='make_garden_magic.exe', command=self.autofill_grid)
-        button_autofill.pack(side=RIGHT,padx=self.pad_px,pady=self.pad_px)
+        # Load and save image buttons
+        button_load = Button(grid_frame,text='open',command=self.load_image)
+        button_load.pack(side=RIGHT,padx=self.pad_px,pady=self.pad_px)
+        button_save = Button(grid_frame,text='save',command=self.save_by_plant)
+        button_save.pack(side=RIGHT,padx=self.pad_px,pady=self.pad_px)
         # Add a button to clear the grid
-        button_clear = Button(frame,text='clear',command=self.clear_grid)
+        button_clear = Button(grid_frame,text='clear',command=self.clear_grid)
         button_clear.pack(side=LEFT,padx=self.pad_px,pady=self.pad_px)
         
         def autofill_grid(event):
             pass
+        
+        button_autofill = Button(grid_frame,text='make_garden_magic.exe', command= self.autofill_grid)
+        button_autofill.pack(side=RIGHT,padx=self.pad_px,pady=self.pad_px)
+
         def create_button(self, text, _class):
             "Button that creates a new window"
             Button(
-            self.frame, text=text,
+            self.grid_frame, text=text,
             command=lambda: self.new_window(_class)).pack()
 
         def new_window(self, _class):
@@ -116,49 +93,6 @@ class MainWindow:
         def close_window(self):
             self.master.destroy()
 
-        def palette_click_callback(event):
-            """Function called when someone clicks on the palette canvas."""
-            click_loc_x = event.x
-            click_loc_y = event.y
-
-            # Did the user click a plant from the palette?
-            if self.palette_pad_px < click_loc_y < self.palette_height_px + self.palette_pad_px:
-                # Index of the selected palette rectangle (plus padding)
-                palette_cell_selected = click_loc_x // (self.palette_width_px + self.palette_pad_px)
-                # click_loc_x-position with respect to the palette rectangle left edge
-                xp = click_loc_x - palette_cell_selected*(self.palette_width_px + self.palette_pad_px) - self.palette_pad_px
-                # Is the index valid and the click within the rectangle?
-                if palette_cell_selected < self.num_plants_palette and 0 < xp < self.palette_width_px:
-                    self.select_plant(palette_cell_selected)
-        # Bind the palette click callback function to the left mouse button
-        # press event on the palette canvas.
-        self.palette_canvas.bind('<ButtonPress-1>', palette_click_callback)
-
-        def w_click_callback(event):
-            """Function called when someone clicks on the grid canvas."""
-            click_loc_x, click_loc_y = event.x, event.y
-
-            # Did the user click a cell in the grid?
-            # Indexes into the grid of cells (including padding)
-            x_axis_index = int(click_loc_x // (self.cell_px_width  + self.pad_px))
-            y_axis_index = int(click_loc_y // (self.cell_px_height + self.pad_px))
-            xc = click_loc_x - x_axis_index*(self.cell_px_width  + self.pad_px) - self.pad_px
-            yc = click_loc_y - y_axis_index*(self.cell_px_height + self.pad_px) - self.pad_px
-            if x_axis_index < grid_size_n and y_axis_index < grid_size_n and 0 < xc < self.cell_px_width  and 0 < yc < self.cell_px_height:
-                i = y_axis_index*grid_size_n+x_axis_index
-                self.canvasframe.itemconfig(self.cells[i], fill=self.plants_palette[self.selected_plant_index])
-        # Bind the grid click callback function to the left mouse button
-        # press event on the grid canvas.
-        self.canvasframe.bind('<ButtonPress-1>', w_click_callback)
-
-    def select_plant(self, i):
-        """Select the plant indexed at i in the plants_palette list."""
-
-        self.palette_canvas.itemconfig(self.palette_rects[self.selected_plant_index],
-                                       outline='black', width=1)
-        self.selected_plant_index = i
-        self.palette_canvas.itemconfig(self.palette_rects[self.selected_plant_index],
-                                       outline='black', width=5)
 
     def _get_cell_coords(self, i):
         """Get the <letter><number> coordinates of the cell indexed at i."""
@@ -257,9 +191,6 @@ class MainWindow:
                 for coord in coords:
                     i = _coords_to_index(coord.strip())
                     self.canvasframe.itemconfig(self.cells[i], fill=this_plant)
-
-
-
 
 
 
