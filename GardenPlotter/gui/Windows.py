@@ -6,7 +6,7 @@ from GardenPlotter.database.database_stuff import *
 MAX_N, DEFAULT_N = 26, 10
 # The "default" plant for an unfilled grid cell
 UNFILLED = '#fff'
-
+,
 class MainWindow:
     def __init__(self, 
                  master, 
@@ -258,57 +258,9 @@ class MainWindow:
                     i = _coords_to_index(coord.strip())
                     self.canvasframe.itemconfig(self.cells[i], fill=this_plant)
 
-class ConfigurationWindow(MainWindow):
 
-    def __init__(self, master):
-        self.master = master
-        self.master.title("Configuration Window")
-        self.master.geometry("400x100+200+200")
-        self.show_widgets()
 
-    def show_widgets(self):
-        "A frame with a button to quit the window"
-        self.frame = Frame(self.master)
-        self.quit_button = Button(self.frame, text=f"Quit this window",command=self.close_window)
-        self.quit_button.pack()
-        self.create_button("Open Plant list database", PlantListWindow)
-        self.frame.pack()
 
-    def close_window(self):
-        self.master.destroy()
 
-class PlantListWindow(MainWindow):
-    def __init__(self, master,size):
-        self.master = master
-        self.master.title("All my Plants")
-        self.master.geometry(size)
-        self.show_widgets()
 
-    def show_widgets(self):
-        self.frame = Frame(self.master, bg="green")
-        self.quit  = Button(self.frame, text=f"Quit this window" ,command=self.close_window)
-        self.quit.pack()
-        self.label = Label(self.frame, text="THIS IS ONLY IN THE THIRD WINDOW")
-        self.label.pack()
-        self.frame.pack()
 
-    def close_window(self):
-        self.master.destroy()
-
-class PlantInformationWindow(MainWindow):
-    def __init__(self, master, size, plant_to_display):
-        self.master = master
-        self.master.title("Plant Information")
-        self.master.geometry(size)
-        self.show_widgets()
-
-    def show_widgets(self):
-        self.frame = Frame(self.master)
-        self.quit  = Button(self.frame, text=f"Quit this window" ,command=self.close_window)
-        self.quit.pack()
-        self.label = Label(self.frame, text="THIS IS ONLY IN THE INFORMATION WINDOW")
-        self.label.pack()
-        self.frame.pack()
-        
-    def close_window(self):
-        self.master.destroy()
