@@ -12,9 +12,10 @@ __license__ = 'GPLv3'
 import garden
 import pandas
 from tkinter import *
-import gui.GardenGridGui
-import database.database_stuff
+from gui.GardenGridGui import GardenGridGui
+from database.database_stuff import *
 from std_imports import error_printer,warning_message
+
     #TODO: 
             # FALLBACK 
         # TO
@@ -47,9 +48,9 @@ class ScrapeWikipediaTableForData:
                                         bad_for         = dataframe.iloc[row]['bad_for'],
                                         notes           = dataframe.iloc[row]['notes'],
                                         )
-                    #database.session.add(plant_entry)
+                    #PlantDatabase.session.add(plant_entry)
                     add_plant_to_db(plant_entry)
-                #database.session.commit()
+                #PlantDatabase.session.commit()
 
 if DATABASE_EXISTS:
     plant_data_lookup = ScrapeWikipediaTableForData(sections_to_grab,thing_to_get)

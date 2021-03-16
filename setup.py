@@ -4,6 +4,10 @@ import setuptools
 with open("README.md", "r") as fh:
     long_description = fh.read()
 # requires python3-tk package be installed on debian buster
+# requires:
+# lxml
+# flask-sqlalchemy
+# pandas
 
 setuptools.setup(
     name="Garden Plotter",

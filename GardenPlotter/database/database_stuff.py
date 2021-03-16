@@ -37,12 +37,12 @@ try:
     else:
         DATABASE_EXISTS = False        
     
-    PlantsDatabase = Flask(__name__ )
-    PlantsDatabase.config.from_object(Config)
-    database = SQLAlchemy(PlantsDatabase)
-    database.init_app(PlantsDatabase)
+    PlantsGUIDatabase = Flask(__name__ )
+    PlantsGUIDatabase.config.from_object(Config)
+    PlantDatabase = SQLAlchemy(PlantsGUIDatabase)
+    PlantDatabase.init_app(PlantsGUIDatabase)
     if TESTING == True:
-        database.metadata.clear()
+        PlantDatabase.metadata.clear()
 except Exception:
     exc_type, exc_value, exc_tb = sys.exc_info()
     tb = traceback.TracebackException(exc_type, exc_value, exc_tb) 
@@ -51,23 +51,23 @@ except Exception:
 #########################################################
 ###                    PLANT MODEL
 #########################################################
-class Plants(database.Model):
+class Plants(PlantDatabase.Model):
     __tablename__       = 'Plants'
     #__table_args__      = {'extend_existing': True}
-    id                  = database.Column(database.Integer,
+    id                  = PlantDatabase.Column(PlantDatabase.Integer,
                                           index         = True,
                                           unique        = True,
                                           autoincrement = True)
-    plant_type                         = database.Column(database.String(256))                                          
-    name                               = database.Column(database.String(256),
+    plant_type                         = PlantDatabase.Column(PlantDatabase.String(256))                                          
+    name                               = PlantDatabase.Column(PlantDatabase.String(256),
                                           primary_key   = True)
-    scientific_name                    = database.Column(database.String(256))
-    helps                              = database.Column(database.String(256))
-    helped_by                          = database.Column(database.String(256))
-    bad_for                            = database.Column(database.String(256))
-    attracts_insects                   = database.Column(database.String(256))
-    repels_insects                     = database.Column(database.String(256))    
-    notes                              = database.Column(database.String(256))
+    scientific_name                    = PlantDatabase.Column(PlantDatabase.String(256))
+    helps                              = PlantDatabase.Column(PlantDatabase.String(256))
+    helped_by                          = PlantDatabase.Column(PlantDatabase.String(256))
+    bad_for                            = PlantDatabase.Column(PlantDatabase.String(256))
+    attracts_insects                   = PlantDatabase.Column(PlantDatabase.String(256))
+    repels_insects                     = PlantDatabase.Column(PlantDatabase.String(256))    
+    notes                              = PlantDatabase.Column(PlantDatabase.String(256))
 
     def __repr__(self):
         return '''=========================================
@@ -94,19 +94,19 @@ notes     : {}
 #########################################################
 ###                    GARDEN MODEL
 #########################################################
-class Garden(database.Model):
+class Garden(PlantDatabase.Model):
     __tablename__       = 'Garden'
     #__table_args__      = {'extend_existing': True}
-    id               = database.Column(database.Integer,
+    id               = PlantDatabase.Column(PlantDatabase.Integer,
                             index         =True,
                             unique        =True,
                             autoincrement =True)
-    name             = database.Column(database.String(256),
+    name             = PlantDatabase.Column(PlantDatabase.String(256),
                             primary_key   = True)
-    hemisphere       = database.Column(database.String(256))
-    zone             = database.Column(database.String(256))
-    notes            = database.Column(database.String(256))
-    grid_data        = database.Column(database.Text)
+    hemisphere       = PlantDatabase.Column(PlantDatabase.String(256))
+    zone             = PlantDatabase.Column(PlantDatabase.String(256))
+    notes            = PlantDatabase.Column(PlantDatabase.String(256))
+    grid_data        = PlantDatabase.Column(PlantDatabase.Text)
 
     def __repr__(self):
         return '''
@@ -129,11 +129,11 @@ def add_plant_to_db(plant_to_add):
     """
     """
     try:
-        duplicate_check_query = database.session.query(Plants).filter_by(name=plant_to_add.name).scalar() is not None
+        duplicate_check_query = PlantDatabase.session.query(Plants).filter_by(name=plant_to_add.name).scalar() is not None
         if duplicate_check_query:
             info_message('[+] Duplicate Entry Avoided : ' + plant_to_add.name)
-        database.session.add(plant_to_add)
-        database.session.commit
+        PlantDatabase.session.add(plant_to_add)
+        PlantDatabase.session.commit
         info_message('[+] Plant Added To Database : ' + plant_to_add.name)
     except Exception:
         exc_type, exc_value, exc_tb = sys.exc_info()
@@ -144,8 +144,8 @@ def add_plant_to_db(plant_to_add):
 ###         INITIALIZE DATABASE TABLES
 #########################################################
 try:
-    database.create_all()
-    database.session.commit()
+    PlantDatabase.create_all()
+    PlantDatabase.session.commit()
 except Exception:
     exc_type, exc_value, exc_tb = sys.exc_info()
     tb = traceback.TracebackException(exc_type, exc_value, exc_tb) 
@@ -173,7 +173,7 @@ if not DATABASE_EXISTS:
     try:
         add_plant_to_db(test_plant)
         add_plant_to_db(test_garden)
-        database.session.commit()
+        PlantDatabase.session.commit()
         info_message("[+] Test Commit SUCESSFUL, Continuing!")
     except Exception:
         exc_type, exc_value, exc_tb = sys.exc_info()
