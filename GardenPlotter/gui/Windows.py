@@ -18,18 +18,21 @@ class MainWindow:
         Initialize a grid and the Tk Frame on which it is rendered.
         Modified to be non-monolithic
         """
+        self.master            = master
         # Number of cells in each dimension.
         self.grid_size_n       = grid_size_n 
         self.pad_px            = 5
+        self.pad_1px           = 1
         self.palette_height_px = 40
-        #palette is as wide as the main canvas minus a pad on either side
-        self.palette_width_px  = self.canvas_width_px - 2 * self.palette_pad_px
         self.canvas_width_px   = canvas_width_px
         self.canvas_px_height  = canvas_height_px
+        #palette is as wide as the main canvas minus a pad on either side
+        self.palette_width_px  = self.canvas_width_px - 2 * self.pad_px
         # Padding stuff: xsize, ysize is the cell size in pixels (without pad).
-        self.cell_px_pad       = self.cell_px_width + 1#pixel
         # cell pixel width with no padding
-        self.cell_px_width     = (self.canvas_width_px - self.cell_px_pad) / self.grid_size_n
+        self.cell_px_width     = (self.canvas_width_px / self.grid_size_n ) \
+                                -(self.pad_1px * self.grid_size_n )
+        self.cell_px_pad       = self.cell_px_width + self.pad_1px
         # cell pixel height no padding
         self.cell_px_height    = (self.canvas_px_height - self.cell_px_pad) / self.grid_size_n
 
