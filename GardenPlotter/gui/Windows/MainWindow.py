@@ -50,24 +50,16 @@ class MainWindow:
 
         # Add the cell rectangles to the grid canvas.
         self.cells = []
-
-# I need this for reference
-# pardon the dust, we are redecorating the carpet OFF 
-# the filigreed bacon walls, by refactoring code
-#x =   0 1 2 3 4        y =   0 0 0 0 0
-#      0 1 2 3 4              1 1 1 1 1
-#      0 1 2 3 4              2 2 2 2 2
-#      0 1 2 3 4              3 3 3 3 3
-#      0 1 2 3 4              4 4 4 4 4
-#      
-
+        # Welcome to the grid
         grid_x = numpy.linspace(0,grid_size_n)
         grid_y = numpy.linspace(0,grid_size_n)
-        x_coords, y_coords = numpy.meshgrid(grid_x,grid_y,indexing='xy')
-        #grid_container = numpy.array(x_coords,y_coords)
-        coord_map = numpy.array([x_coords,y_coords])
-
-        for y_coord, x_coord in grid_container:
+        x_coordinates, y_coordinates = numpy.meshgrid(grid_x,grid_y,indexing='xy')
+        coord_map = numpy.array([x_coordinates,y_coordinates])
+        #makes an array of all points in the grid to feed to the drawing
+        coordinate_array = []
+        for cell_x_position ,cell_y_position in coord_map[0],coord_map[1]:
+            coordinate_array.append((cell_x_position,cell_y_position))
+        for (x_coord, y_coord) in coordinate_array:
                 #drawing from
                 x1    = x_coord * self.cell_px_width
                 y1    = y_coord * self.cell_px_height
@@ -93,8 +85,8 @@ class MainWindow:
 
         # The horizontal axis is labelled A, B, C, ... left-to-right;
         # the vertical axis is labelled 1, 2, 3, ... bottom-to-top.
-        y_axis_index, x_axis_index = divmod(i, self.grid_size_n)
-        return '{}{}'.format(chr(x_axis_index+65), self.grid_size_n-y_axis_index)
+        y_coord, x_coord = divmod(i, self.grid_size_n)
+        return '{}{}'.format(chr(x_coord+65), self.grid_size_n-y_coord)
 
     def save_by_plant(self):
         """Output a list of cell coordinates, sorted by cell plant."""
