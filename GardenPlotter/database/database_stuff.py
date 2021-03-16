@@ -142,13 +142,13 @@ def add_plant_to_db(plant_to_add):
 #########################################################
 ###         INITIALIZE DATABASE TABLES
 #########################################################
-try:
-    PlantDatabase.create_all()
-    PlantDatabase.session.commit()
-except Exception:
-    exc_type, exc_value, exc_tb = sys.exc_info()
-    tb = traceback.TracebackException(exc_type, exc_value, exc_tb) 
-    error_message("[-] Database Table Creation FAILED \n" + ''.join(tb.format_exception_only()))
+#try:
+#    PlantDatabase.create_all()
+#    PlantDatabase.session.commit()
+#except Exception:
+#    exc_type, exc_value, exc_tb = sys.exc_info()
+#    tb = traceback.TracebackException(exc_type, exc_value, exc_tb) 
+#    error_message("[-] Database Table Creation FAILED \n" + ''.join(tb.format_exception_only()))
 
 #########################################################
 ###                  TEST ENTRIES 
@@ -167,14 +167,4 @@ test_garden = Garden(name = 'home base',
                      hemisphere = 'south',
                      zone = '7a',
                      notes = 'bada-bing bada-boom, big badaboom'
-                    )
-if not DATABASE_EXISTS:
-    try:
-        add_plant_to_db(test_plant)
-        add_plant_to_db(test_garden)
-        PlantDatabase.session.commit()
-        info_message("[+] Test Commit SUCESSFUL, Continuing!")
-    except Exception:
-        exc_type, exc_value, exc_tb = sys.exc_info()
-        tb = traceback.TracebackException(exc_type, exc_value, exc_tb) 
-        error_message("[-] Test Commit FAILED \n" + ''.join(tb.format_exception_only()))    
+                    )  

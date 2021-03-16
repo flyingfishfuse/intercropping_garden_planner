@@ -51,17 +51,27 @@ class ScrapeWikipediaTableForData:
                                             bad_for         = dataframe.iloc[row]['bad_for'],
                                             notes           = dataframe.iloc[row]['notes'],
                                             )
-                        #PlantDatabase.session.add(plant_entry)
                         add_plant_to_db(plant_entry)
-                    #PlantDatabase.session.commit()
+        except Exception:
+            error_printer("[-] WikiScraper FAILEDFAILED")
 
 try:
     if not DATABASE_EXISTS:
-        plant_data_lookup = ScrapeWikipediaTableForData(sections_to_grab,thing_to_get)
-        plant_data_lookup.dothethingjulie()
         try:
             PlantDatabase.create_all()
             PlantDatabase.session.commit()
+        except Exception:
+            error_printer("[-] Database Table Creation FAILED \n" + ''.join(tb.format_exception_only()))
+        try:            
+            add_plant_to_db(test_plant)
+            add_plant_to_db(test_garden)
+            info_message("[+] Test Commit SUCESSFUL, Continuing!\n")
+        except Exception:
+            error_printer("[-] Test Commit FAILED \n") 
+
+        try:
+            plant_data_lookup = ScrapeWikipediaTableForData(sections_to_grab,thing_to_get)
+            plant_data_lookup.dothethingjulie()
         except Exception:
             error_printer("[-] Database Table Creation FAILED \n" + ''.join(tb.format_exception_only()))
     else:
