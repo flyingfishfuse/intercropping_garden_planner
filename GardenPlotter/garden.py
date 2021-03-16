@@ -18,8 +18,9 @@ class GardenEntity():
 class PlantEntity:
     def __init__(self,plant_data : dict):
         self.goodneighbors = list
+        self.plant_data = plant_data
     def __name__(self):
-        return plant_data.get('name')
+        return self.plant_data.get('name')
     def __repr__(self):
         print(" I AM A : {}".format(self.__name__))
         #print(self.__name__) 

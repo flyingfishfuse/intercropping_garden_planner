@@ -10,11 +10,11 @@ __version__ = '0.1A'
 __license__ = 'GPLv3'
 
 from tkinter import *
-from GardenPlotter.std_imports import error_printer
-import GardenPlotter.gui.grid
-import GardenPlotter.garden
-from GardenPlotter.gui.grid import GardenGridGui
-import GardenPlotter.database.database_stuff
+from std_imports import error_printer
+import gui.GardenGridGui
+import garden
+from gui.GardenGridGui import GardenGridGui
+import database.database_stuff
 
     #TODO: 
             # FALLBACK 

@@ -4,13 +4,13 @@
 #from tkinter import *
 from tkinter import *
 from tkinter import filedialog
-import GardenPlotter.database.database_stuff
-from GardenPlotter.database.database_stuff import *
-from GardenPlotter.gui.Windows import *
-from GardenPlotter.std_imports import error_printer
-from GardenPlotter.gui.Windows import MainWindow,ConfigurationWindow,
-from GardenPlotter.gui.Windows import PlantListWindow,PlantsPalette
-from GardenPlotter.gui.Windows import PlantsInformation
+import database.database_stuff
+from database.database_stuff import *
+from gui.Windows import *
+from std_imports import error_printer
+from gui.Windows import MainWindow,ConfigurationWindow
+from gui.Windows import PlantListWindow,PlantsPalette
+from gui.Windows import PlantsInformation
 
 # Maximum and default grid size
 MAX_N, DEFAULT_N = 26, 10
