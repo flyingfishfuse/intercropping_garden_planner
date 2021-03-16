@@ -23,7 +23,7 @@ DATABASE_FILENAME  = DATABASE + '.db'
 sections_to_grab = ['Vegetables', 'Fruit', 'Herbs', 'Flowers', 'Other']
 thing_to_get = 'https://en.wikipedia.org/wiki/List_of_companion_plants'
 
-if database_exists(LOCAL_CACHE_FILE) or os.path.exists(DATABASE_FILENAME):
+if database_exists(LOCAL_CACHE_FILE) or os.path.exists('/database/' + DATABASE_FILENAME):
     DATABASE_EXISTS = True
 else:
     DATABASE_EXISTS = False        
@@ -133,11 +133,9 @@ def add_plant_to_db(plant_to_add):
             info_message('[+] Duplicate Entry Avoided : ' + plant_to_add.name)
         PlantDatabase.session.add(plant_to_add)
         PlantDatabase.session.commit
-        info_message('[+] Plant Added To Database : ' + plant_to_add.name)
+        #info_message('[+] Plant Added To Database : ' + plant_to_add.name)
     except Exception:
-        exc_type, exc_value, exc_tb = sys.exc_info()
-        tb = traceback.TracebackException(exc_type, exc_value, exc_tb) 
-        debug_message("[-] add_plant_to_db() FAILED \n" + ''.join(tb.format_exception_only()))
+        error_message("[-] add_plant_to_db() FAILED \n")
 
 #########################################################
 ###         INITIALIZE DATABASE TABLES

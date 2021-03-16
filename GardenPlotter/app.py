@@ -32,7 +32,7 @@ class ScrapeWikipediaTableForData:
     
     def dothethingjulie(self):
         try:
-            self.dataframes       = pandas.read_html(self.thing_to_get)
+            self.dataframes = pandas.read_html(self.thing_to_get)
             for dataframe in self.dataframes:
                 if dataframe.columns[0][0] in self.sections_to_grab:
                     dataframe.columns = ['name','scientific_name','helps','helped_by',
@@ -56,10 +56,12 @@ class ScrapeWikipediaTableForData:
             error_printer("[-] WikiScraper FAILEDFAILED")
 
 try:
-    if not DATABASE_EXISTS:
+    if os.path.exists('/database/plants_info.db') == False:
+        info_message("IT SAYS DB NOT EXIST")
         try:
             PlantDatabase.create_all()
             PlantDatabase.session.commit()
+            info_message("[+] Database Tables Created")
         except Exception:
             error_printer("[-] Database Table Creation FAILED \n" + ''.join(tb.format_exception_only()))
         try:            
