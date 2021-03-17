@@ -5,7 +5,7 @@ from tkinter import *
 from tkinter import filedialog
 import database.database_stuff
 from database.database_stuff import *
-from std_imports import error_printer
+from std_imports import error_printer,info_message
 from gui.Windows.PlantsInformation import PlantInformationWindow
 from gui.Windows.MainWindow import MainWindow
 from gui.Windows.ConfigurationWindow import ConfigurationWindow
@@ -38,6 +38,9 @@ class GardenGridGui:
         self.config_menu_size   = "800x600+200+200"
         self.plant_info_size    = "800x600+200+200"
         plants_list_window_size = '1024x1024+20+20'
+        self.init_gui()
+
+    def init_gui(self):
         try:       
             main_window = MainWindow(master= self.master,
                             canvas_width_px = self.canvas_width_px,
@@ -46,6 +49,8 @@ class GardenGridGui:
                             # positional argument, testing implicit argument
                             grid_size_n=self.grid_size_n
                         )
+            main_window
+            info_message("[+] MAIN Window initialized")
         except Exception:
             error_printer("[-] MAIN Window Initialization FAILED")
         try:
@@ -56,6 +61,8 @@ class GardenGridGui:
                                 palette_cell_px_y = 60,
                                 padding_px        = 5
                             )
+            plants_palette
+            info_message("[+] PALETTE Window initialized")
             #plants_info    = PlantInformationWindow(self.master,
             #                    self.plant_info_size
             #                )

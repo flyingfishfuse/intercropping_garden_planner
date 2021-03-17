@@ -7,7 +7,13 @@ after you put preferred plants in preferred locations. OR BOTH!
 
 Database works
 
-Working on getting the grid to pop up ... no errors but it's not working!!! ARRRGGGHHH!
+Working on:
+  getting the grid to pop up
+
+  clicking gets a thingamadoo
+
+  plant images in the buttons, grid_cells
+
 
 Once the window draws and the code is tied together, I will package it up for everyone to use
 on any computer

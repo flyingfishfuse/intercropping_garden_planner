@@ -46,7 +46,6 @@ class MainWindow:
         self.canvasframe = Canvas(self.master, width=self.canvas_width_px,height=self.canvas_width_px)
         self.canvasframe.bind('<ButtonPress-1>', self.get_cell_from_clickyclicky)
         self.canvasframe.pack()
-
         self.cells = []
 
         # Welcome to the grid
@@ -61,9 +60,10 @@ class MainWindow:
             y_field       = field[1]
             grid_location = list(itertools.zip_longest(x_field,y_field))
             self.grid_points.append(grid_location)
-            for thing in self.grid_points:
-                for each in thing:
-                    self.list_of_all_cells.append(each)
+        for thing in self.grid_points:
+            print(thing)
+            for each in thing:
+                self.list_of_all_cells.append(each)
         #>>> for each in grid_points:
         #...     print(each)
         #  -------------------X-------------------- 
@@ -77,9 +77,6 @@ class MainWindow:
         # >>> grid_points[0]
         # [(0, 0), (1, 0), (2, 0), (3, 0), (4, 0)]
 
-        def grab_xy(self, x , y):
-            return self.grid_points[y][x]
-
         for (x_coord, y_coord) in self.list_of_all_cells:
             #drawing from
             x1 = x_coord * self.cell_px_width
@@ -90,8 +87,7 @@ class MainWindow:
             # zort!
             #garden_cell = self.canvasframe.create_rectangle(x1, y1, x2, y2, fill = UNFILLED)
             #self.cells.append(garden_cell)
-            new_cell = self.canvasframe.create_rectangle(x1, y1, x2, y2, fill = UNFILLED)
-            new_cell
+            self.canvasframe.create_rectangle(x1, y1, x2, y2, fill = UNFILLED)
             self.canvasframe.pack()
 
         # Add a button to clear the grid
@@ -99,10 +95,14 @@ class MainWindow:
         button_clear.pack(side=LEFT,padx=self.pad_px,pady=self.pad_px)
         close_window = Button(self.grid_frame,text='close window',command=self.close_window)
         close_window.pack(side=LEFT,padx=self.pad_px,pady=self.pad_px)
-
+    
+    def grab_xy(self, x , y):
+            return self.grid_points[y][x]
+    
     def get_cell_from_clickyclicky(self, event):
         """Function called when someone clicks on the grid canvas."""
         click_x_px, click_y_px = event.x, event.y
+        #click_x_px, click_y_px = event.x_root, event.y_root
         cell_x_location  = click_x_px // self.cell_px_width
         cell_y_location  = click_y_px // self.cell_px_height
         cell_boundry_x   = click_x_px - cell_x_location * self.cell_px_width 
@@ -114,9 +114,9 @@ class MainWindow:
             and (0 < cell_boundry_x < self.cell_px_width)\
             and (0 < cell_boundry_y < self.cell_px_height):
             index = cell_y_location*self.grid_size_n + cell_x_location
-            self.canvasframe.itemconfig(self.cells[index], fill=UNFILLED)
-            debug_message("USER CLICKED AT : {click_x_px},{click_y_px}".format())
-            debug_message("cell coordinate : {cell_x_location},{cell_y_location}".format())
+            #self.canvasframe.itemconfig(self.cells[index], fill=UNFILLED)
+            print("USER CLICKED AT : {},{}".format(click_x_px,click_y_px))
+            print("cell coordinate : {},{}".format(cell_x_location,cell_y_location))
 
     
     def close_window(self):

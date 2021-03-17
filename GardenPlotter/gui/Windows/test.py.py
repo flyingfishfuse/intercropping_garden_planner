@@ -19,6 +19,7 @@ for field in coordinate_array:
 for each in grid_points:
     print(each)
 print(list_of_all_cells)
+print(enumerate(list_of_all_cells))
 
 #>>> for each in grid_points:
 #...     print(each)
