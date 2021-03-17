@@ -61,7 +61,6 @@ class MainWindow:
             grid_location = list(itertools.zip_longest(x_field,y_field))
             self.grid_points.append(grid_location)
         for thing in self.grid_points:
-            print(thing)
             for each in thing:
                 self.list_of_all_cells.append(each)
         #>>> for each in grid_points:

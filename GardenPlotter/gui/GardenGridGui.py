@@ -54,14 +54,14 @@ class GardenGridGui:
         except Exception:
             error_printer("[-] MAIN Window Initialization FAILED")
         try:
-            plants_palette = PlantsPalette(self.master,
+            PlantsPalette(self.master,
                                 palette_cells_x   = 10,
                                 palette_cells_y   = 4,
                                 palette_cell_px_x = 80,
                                 palette_cell_px_y = 60,
                                 padding_px        = 5
                             )
-            plants_palette
+            #plants_palette
             info_message("[+] PALETTE Window initialized")
             #plants_info    = PlantInformationWindow(self.master,
             #                    self.plant_info_size
