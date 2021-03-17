@@ -52,13 +52,35 @@ class MainWindow:
         # Add the cell rectangles to the grid canvas.
         self.cells = []
         # Welcome to the grid
+        self.grid_points = []
+        self.list_of_all_cells = []
         grid_x = range(grid_size_n)
         grid_y = range(grid_size_n)
         x_coordinates, y_coordinates = numpy.meshgrid(grid_x,grid_y,indexing='xy')
-        #makes an array of all points in the grid to feed to the drawing
-        coordinate_array = itertools.zip_longest(x_coordinates,y_coordinates)
-        for cell_x_position ,cell_y_position in coordinate_array:
-            self.cells.append((cell_x_position,cell_y_position))
+        coordinate_array = list(itertools.zip_longest(x_coordinates,y_coordinates))
+        for field in coordinate_array:
+            x_field       = field[0]
+            y_field       = field[1]
+            grid_location = list(itertools.zip_longest(x_field,y_field))
+            self.grid_points.append(grid_location)
+            for thing in self.grid_points:
+                for each in thing:
+                    self.list_of_all_cells.append(each)
+        #>>> for each in grid_points:
+        #...     print(each)
+        #  -------------------X-------------------- 
+        #   set0  [(0, 0), (1, 0), (2, 0), (3, 0), (4, 0)]
+        #   set1  [(0, 1), (1, 1), (2, 1), (3, 1), (4, 1)]
+        # Y set2  [(0, 2), (1, 2), (2, 2), (3, 2), (4, 2)]
+        #   set3  [(0, 3), (1, 3), (2, 3), (3, 3), (4, 3)]
+        #   set4  [(0, 4), (1, 4), (2, 4), (3, 4), (4, 4)]
+        # 
+        #>>> y axis index is grid_points[y_index]
+        # [(0, 0), (1, 0), (2, 0), (3, 0), (4, 0)]
+
+        def grab_xy(self, x , y):
+            return self.grid_points[y][x]
+
         for (x_coord, y_coord) in coordinate_array:
                 #drawing from
                 x1    = x_coord * self.cell_px_width
