@@ -84,11 +84,12 @@ except Exception:
 
 try:
     # Set the whole thing running
-    root = Tk()
+    GardenWindow = Tk()
+    GardenWindow.title = "A garden planning application"
     #defaults are 30 cells on a 1024x1024px SVG grid of cells with 5px padding
     #TODO: add a number entry/slider + "apply" button to change padding px and re-render
-    Garden = GardenGridGui(root, grid_size_n=40)
-    root.mainloop()
+    Garden = GardenGridGui(GardenWindow, grid_size_n=40)
+    GardenWindow.mainloop()
 except Exception:
     error_printer("[-] Application Initialization FAILED")
 

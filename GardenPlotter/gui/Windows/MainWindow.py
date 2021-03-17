@@ -14,7 +14,8 @@ from tkinter import *
 from tkinter import filedialog
 #from gui.GardenGridGui import GardenGridGui
 from database.database_stuff import Plants
-
+from std_imports import debug_message
+import std_imports
 #lets try to clean up the grid and use numpy?
 import numpy
 
@@ -36,21 +37,17 @@ class MainWindow:
         self.pad_1px           = 1
         self.canvas_width_px   = canvas_width_px
         self.canvas_px_height  = canvas_height_px
-        # Padding stuff: xsize, ysize is the cell size in pixels (without pad).
-        # cell pixel width with no padding
-        self.cell_px_width     = (self.canvas_width_px / self.grid_size_n ) -(self.pad_1px * self.grid_size_n )
-        self.cell_px_pad       = self.cell_px_width + self.pad_1px
-        # cell pixel height no padding
-        self.cell_px_height    = (self.canvas_px_height - self.cell_px_pad) / self.grid_size_n
+        self.cell_px_width     = self.canvas_width_px / self.grid_size_n - self.grid_size_n 
+        self.cell_px_height    = self.canvas_px_height / self.grid_size_n
+        
         self.grid_frame        = Frame(self.master)
         self.grid_frame.pack()
-
-        # The canvas onto which the grid is drawn.
+        
         self.canvasframe = Canvas(self.master, width=self.canvas_width_px,height=self.canvas_width_px)
         self.canvasframe.pack()
 
-        # Add the cell rectangles to the grid canvas.
         self.cells = []
+
         # Welcome to the grid
         self.grid_points = []
         self.list_of_all_cells = []
@@ -69,29 +66,32 @@ class MainWindow:
         #>>> for each in grid_points:
         #...     print(each)
         #  -------------------X-------------------- 
-        #   set0  [(0, 0), (1, 0), (2, 0), (3, 0), (4, 0)]
-        #   set1  [(0, 1), (1, 1), (2, 1), (3, 1), (4, 1)]
-        # Y set2  [(0, 2), (1, 2), (2, 2), (3, 2), (4, 2)]
-        #   set3  [(0, 3), (1, 3), (2, 3), (3, 3), (4, 3)]
-        #   set4  [(0, 4), (1, 4), (2, 4), (3, 4), (4, 4)]
+        #   [(0, 0), (1, 0), (2, 0), (3, 0), (4, 0)]
+        #   [(0, 1), (1, 1), (2, 1), (3, 1), (4, 1)]
+        # Y [(0, 2), (1, 2), (2, 2), (3, 2), (4, 2)]
+        #   [(0, 3), (1, 3), (2, 3), (3, 3), (4, 3)]
+        #   [(0, 4), (1, 4), (2, 4), (3, 4), (4, 4)]
         # 
         #>>> y axis index is grid_points[y_index]
+        # >>> grid_points[0]
         # [(0, 0), (1, 0), (2, 0), (3, 0), (4, 0)]
 
         def grab_xy(self, x , y):
             return self.grid_points[y][x]
 
-        for (x_coord, y_coord) in coordinate_array:
-                #drawing from
-                x1    = x_coord * self.cell_px_width
-                y1    = y_coord * self.cell_px_height
-                #drawing to
-                x2    = x1 + self.cell_px_width
-                y2    = y1 + self.cell_px_height
-                # zort!
-                garden_cell = self.canvasframe.create_rectangle(x1, y1, x2, y2, fill = UNFILLED)
-                self.cells.append(garden_cell)
-
+        for (x_coord, y_coord) in self.list_of_all_cells:
+            #drawing from
+            x1 = x_coord * self.cell_px_width
+            y1 = y_coord * self.cell_px_height
+            #drawing to
+            x2 = x1 + self.cell_px_width
+            y2 = y1 + self.cell_px_height
+            # zort!
+            #garden_cell = self.canvasframe.create_rectangle(x1, y1, x2, y2, fill = UNFILLED)
+            #self.cells.append(garden_cell)
+            new_cell = self.canvasframe.create_rectangle(x1, y1, x2, y2, fill = UNFILLED)
+            new_cell
+            self.canvasframe.pack()
 
         # Add a button to clear the grid
         button_clear = Button(self.grid_frame,text='clear',command=self.clear_grid)

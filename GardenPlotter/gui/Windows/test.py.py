@@ -12,7 +12,7 @@ for field in coordinate_array:
     y_field       = field[1]
     grid_location = list(itertools.zip_longest(x_field,y_field))
     grid_points.append(grid_location)
-    for thing in self.grid_points:
+    for thing in grid_points:
         for each in thing:
             list_of_all_cells.append(each)
 #>>> for each in grid_points:
