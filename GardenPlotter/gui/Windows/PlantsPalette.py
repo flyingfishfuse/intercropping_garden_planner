@@ -41,6 +41,22 @@ class PlantsPalette:
         self.label.pack()
         self.frame.pack()
 
+#    def click_callback(self, event):
+#        """Function called when someone clicks on the palette canvas."""
+#        x, y = event.x, event.y
+#        # Did the user click a colour from the palette?
+#        if p_pad < y < p_height + p_pad:
+#            # Index of the selected palette rectangle (plus padding)
+#            ic = x // (p_width + p_pad)
+#            # x-position with respect to the palette rectangle left edge
+#            xp = x - ic*(p_width + p_pad) - p_pad
+#            # Is the index valid and the click within the rectangle?
+#            if ic < self.ncolours and 0 < xp < p_width:
+#                self.select_colour(ic)
+#    # Bind the palette click callback function to the left mouse button
+#    # press event on the palette canvas.
+#    self.canvasframe.bind('<ButtonPress-1>', palette_click_callback)
+
     def plant_button(self):
         pass
 

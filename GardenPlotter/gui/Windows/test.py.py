@@ -15,6 +15,11 @@ for field in coordinate_array:
     for thing in grid_points:
         for each in thing:
             list_of_all_cells.append(each)
+
+for each in grid_points:
+    print(each)
+print(list_of_all_cells)
+
 #>>> for each in grid_points:
 #...     print(each)
 #  -------------------X-------------------- 

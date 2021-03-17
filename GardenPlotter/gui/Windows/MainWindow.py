@@ -44,6 +44,7 @@ class MainWindow:
         self.grid_frame.pack()
         
         self.canvasframe = Canvas(self.master, width=self.canvas_width_px,height=self.canvas_width_px)
+        self.canvasframe.bind('<ButtonPress-1>', self.get_cell_from_clickyclicky)
         self.canvasframe.pack()
 
         self.cells = []
@@ -99,6 +100,25 @@ class MainWindow:
         close_window = Button(self.grid_frame,text='close window',command=self.close_window)
         close_window.pack(side=LEFT,padx=self.pad_px,pady=self.pad_px)
 
+    def get_cell_from_clickyclicky(self, event):
+        """Function called when someone clicks on the grid canvas."""
+        click_x_px, click_y_px = event.x, event.y
+        cell_x_location  = click_x_px // self.cell_px_width
+        cell_y_location  = click_y_px // self.cell_px_height
+        cell_boundry_x   = click_x_px - cell_x_location * self.cell_px_width 
+        cell_boundry_y   = click_y_px - cell_y_location * self.cell_px_height
+        self.user_just_clicked_on = (cell_x_location,cell_y_location)
+        #checking pixel boundries
+        if (cell_x_location < self.grid_size_n)\
+            and (cell_y_location < self.grid_size_n )\
+            and (0 < cell_boundry_x < self.cell_px_width)\
+            and (0 < cell_boundry_y < self.cell_px_height):
+            index = cell_y_location*self.grid_size_n + cell_x_location
+            self.canvasframe.itemconfig(self.cells[index], fill=UNFILLED)
+            debug_message("USER CLICKED AT : {click_x_px},{click_y_px}".format())
+            debug_message("cell coordinate : {cell_x_location},{cell_y_location}".format())
+
+    
     def close_window(self):
         self.master.destroy()
 
