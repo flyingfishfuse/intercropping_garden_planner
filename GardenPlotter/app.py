@@ -21,10 +21,35 @@ from database.database_stuff import *
         # TO
     # TERMINAL
 # ASK IF USER WANTS POP
+# !was I high when I wrote this? ^
 
 #########################################################
 ###           VERIFY / POPULATE DATABASE
 #########################################################
+################################################]
+## SQLALCHEMY
+#################################################
+
+def check_if_plants_exist_bool(plant_name):
+    exists = database.session.query(Plants.id).filter_by(name=plant_name).first() is not None
+    if exists:
+        info_message()
+        return True
+    else:
+        return False
+        #hwhat the he-hockey stick hockey stick am I doing!?!?!?
+
+
+def table_exists(engine,name):
+    try:
+        from sqlalchemy import inspect
+        blarf = inspect(engine).dialect.has_table(engine.connect(),name)
+        print('[+] Database Table {} EXISTS'.format(name, blarf))
+        #return blarf
+    except Exception:
+        error_printer("[-] TABLE {} does NOT EXIST!".format(name))
+
+
 class ScrapeWikipediaTableForData:
     def __init__(self,sections_to_grab, thing_to_get):
         self.sections_to_grab = sections_to_grab
