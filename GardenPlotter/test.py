@@ -362,8 +362,6 @@ try:
     elif (database_exists(LOCAL_CACHE_FILE)) or  \
         (does_table_exist("Plants") == True) and\
         (is_db_populated() == True): 
-
-    else:
         warning_message('[+] Database already exists, skipping creation')
 except Exception:
     error_printer("[-] Database existance Check FAILED")
