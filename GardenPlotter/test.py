@@ -245,7 +245,7 @@ test_garden = Garden(name = 'home base',
 def does_plant_exists(self,plant_name):
     try:
         if PlantDatabase.session.query(Plants.id).filter_by(name=plant_name).first() is not None:
-            info_message('[+] Plant {} Exists'.format(pl))
+            info_message('[+] Plant {} Exists'.format(plant_name))
             return True
         else:
             return False        
@@ -263,6 +263,12 @@ def does_table_exist(self,name):
             return False
     except Exception:
         error_printer('[-] Table Verification FAILED!')
+
+def is_db_populated():
+    for each in ['Vegetables','Fruits', 'Fruit Trees','Herbs','Flowers','Other']
+    veggies = PlantDatabase.session.query(Plants).filter_by(plant_type = 'Vegetables').all()
+    fruits  = PlantDatabase.session.query(Plants).filter_by(plant_type = 'Fruits').all()
+    herbs   = PlantDatabase.session.query(Plants).filter_by(plant_type = 'Herbs').all()
 
 class ScrapeWikipediaTableForData:
     def __init__(self,sections_to_grab, thing_to_get):
@@ -336,7 +342,7 @@ try:
             error_printer("[-] Database Table Creation FAILED \n")
     if database_exists(LOCAL_CACHE_FILE) and  \
         does_table_exist("Plants") == True and\
-        (PlantDatabase.session.query(Plants).filter_by(plant_type = 'Vegetable') not None) and \
+        
 
         
         try:            

@@ -5,10 +5,21 @@ the idea is you put in the plants you either have planted  already to find good
 neighbors or you make the shape of your plot and have it auto fill in the rest 
 after you put preferred plants in preferred locations. OR BOTH!
 
+getting data from 
+https://everipedia.org/wiki/lang_en/List_of_companion_plants
+https://en.wikipedia.org/wiki/List_of_companion_plants
+
+Please advise of additional sources
+
 Database works
 
 Working on:
   getting the grid to pop up
+
+  Window for adding plants to db
+
+  TEST.py is a monolithic "all in one" file for ...testing!
+    its neato, check it out. 
 
   clicking gets a thingamadoo
 
