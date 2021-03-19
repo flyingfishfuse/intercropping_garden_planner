@@ -13,6 +13,7 @@ __author__  = 'Adam Galindo'
 __email__   = 'null@null.com'
 __version__ = '0.1A'
 __license__ = 'GPLv3'
+import os
 import sys
 import numpy
 import pandas
@@ -25,6 +26,7 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy_utils import database_exists
 from flask import Flask, render_template, Response, Request ,Config
 
+TESTING = True
 try:
     import colorama
     from colorama import init
@@ -241,31 +243,34 @@ test_garden = Garden(name = 'home base',
                      notes = 'bada-bing bada-boom, big badaboom'
                     )  
 
-def check_if_plants_exist_bool(plant_name):
-    try:
-        exists = PlantDatabase.session.query(Plants.id).filter_by(name=plant_name).first() is not None
-    except Exception:
-        error_printer('[-] Database VERIFICATION FAILED!')
-    if exists:
-        info_message()
-        return True
-    else:
-        return False
-
-def table_exists(name):
-    try:
-        from sqlalchemy import inspect
-        blarf = inspect(engine).dialect.has_table(engine.connect(),name)
-        info_message('[+] Database Table {} EXISTS'.format(name))
-        return True
-    except Exception:
-        error_printer("[-] TABLE {} does NOT EXIST!".format(name))
 
 class ScrapeWikipediaTableForData:
     def __init__(self,sections_to_grab, thing_to_get):
         self.sections_to_grab = sections_to_grab
         self.thing_to_get     = thing_to_get
-    
+
+    def does_plant_exists_bool(self,plant_name):
+        try:
+            if PlantDatabase.session.query(Plants.id).filter_by(name=plant_name).first() is not None:
+                info_message('[+] TABLE {} Exists'.format(pl))
+                return True
+            else:
+                return False        
+        except Exception:
+            error_printer('[-] Database VERIFICATION FAILED!')
+
+
+    def does_table_exist_bool(self,name):
+        try:
+            #the "implied IF" is real
+            blarf = inspect(engine).dialect.has_table(engine.connect(),name)
+            info_message('[+] Database Table {} EXISTS'.format(name))
+            return True
+            else:
+                return False
+        except Exception:
+            error_printer("[-] TABLE {} does NOT EXIST!".format(name))
+
     def dothethingjulie(self):
         try:
             self.dataframes = pandas.read_html(self.thing_to_get)
@@ -290,6 +295,7 @@ class ScrapeWikipediaTableForData:
                         add_plant_to_db(plant_entry)
         except Exception:
             error_printer("[-] WIKISCRAPER FAILED!")
+
 grid_points = []
 list_of_all_cells = []
 grid_size_n = 5
