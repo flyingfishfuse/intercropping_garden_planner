@@ -1,5 +1,14 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
+"""
+This file contains: 
+    - The Tkinter code for the Plants Palette Window
+
+"""
+__author__     = 'Adam Galindo'
+__email__     = 'null@null.com'
+__version__ = '0.1A'
+__license__ = 'GPLv3'
 from tkinter import *
 #from gui.GardenGridGui import GardenGridGui
 from database.database_stuff import Plants

@@ -1,5 +1,15 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
+"""
+This file contains: 
+    - Useful bits of code I use in all my projects
+
+"""
+__author__  = 'Adam Galindo'
+__email__   = 'null@null.com'
+__version__ = '0.1A'
+__license__ = 'GPLv3'
+
 #currently controls color printing functions ONLY
 TESTING = True
 
@@ -55,26 +65,22 @@ log_file  = 'garden_grid_message_log'
 logging.basicConfig(filename=log_file, format='%(asctime)s %(message)s', filemode='w')
 logger    = logging.getLogger()
 
-def set_logger_level(matrice_of_pain):
-    if LOGLEVEL in LOGLEVELS:
-        if LOGLEVEL == 'DEV_IS_DUMB'
-            logger.setLevel(logging.DEBUG)
-            debug_message        = lambda message: logger.debug(blueprint(message)) 
-            info_message         = lambda message: logger.info(greenprint(message))   
 
-warning_message      = lambda message: logger.warning(yellow_bold_print(message)) 
-error_message        = lambda message: logger.error(redprint(message)) 
-critical_message     = lambda message: logger.critical(yellow_bold_print(message))
+debug_message = lambda message: logger.debug(blueprint(message)) 
+info_message  = lambda message: logger.info(greenprint(message))   
+warning_message  = lambda message: logger.warning(yellow_bold_print(message)) 
+error_message    = lambda message: logger.error(redprint(message)) 
+critical_message = lambda message: logger.critical(yellow_bold_print(message))
 
 def error_printer(message):
     exc_type, exc_value, exc_tb = sys.exc_info()
-    traceback = traceback.TracebackException(exc_type, exc_value, exc_tb) 
-    error_message( message + ''.join(tb.format_exception_only()))
-    traceback.format_list(traceback.extract_tb(tb)[-1:])[-1]
-    debug_message('LINE NUMBER >>>' + str(exc_tb.tb_lineno))
-    #debug_message(str(exc_tb.tb_frame))
-    #debug_message(str(exc_tb.tb_lasti))
-    #debug_message(str(tb.msg))
+    trace = traceback.TracebackException(exc_type, exc_value, exc_tb) 
+    if LOGLEVEL == 'DEV_IS_DUMB':
+        error_message( message + ''.join(trace.format_exception_only()))
+        traceback.format_list(trace.extract_tb(trace)[-1:])[-1]
+        debug_message('LINE NUMBER >>>' + str(exc_tb.tb_lineno))
+    else:
+        error_message(message + ''.join(trace.format_exception_only()))
 
 ###############################################
 ## BeautifulSoup4 
@@ -85,7 +91,7 @@ def error_printer(message):
 #################################################
 
 def check_if_plants_exist_bool(plant_name):
-    exists = database.session.query(Plants.id).filter_by(name=plant_name).first() is not None
+    exists = PlantDatabase.session.query(Plants.id).filter_by(name=plant_name).first() is not None
     if exists:
         info_message()
         return True

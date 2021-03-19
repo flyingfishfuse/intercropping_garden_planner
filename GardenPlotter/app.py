@@ -4,8 +4,8 @@
 This file contains INSERT STUFF HERE
 This I think is going to be the main file
 """
-__author__     = 'Adam Galindo'
-__email__     = 'null@null.com'
+__author__  = 'Adam Galindo'
+__email__   = 'null@null.com'
 __version__ = '0.1A'
 __license__ = 'GPLv3'
 
@@ -13,9 +13,10 @@ import sys,os
 import garden
 import pandas
 from tkinter import *
-from gui.GardenGridGui import GardenGridGui
-from std_imports import error_printer,warning_message
+import std_imports
 from database.database_stuff import *
+from gui.GardenGridGui import GardenGridGui
+from std_imports import error_printer,warning_message,info_message
     #TODO: 
             # FALLBACK 
         # TO
@@ -31,7 +32,10 @@ from database.database_stuff import *
 #################################################
 
 def check_if_plants_exist_bool(plant_name):
-    exists = database.session.query(Plants.id).filter_by(name=plant_name).first() is not None
+    try:
+        exists = PlantDatabase.session.query(Plants.id).filter_by(name=plant_name).first() is not None
+    except Exception:
+        error_printer('[-] Database VERIFICATION FAILED!')
     if exists:
         info_message()
         return True
@@ -40,12 +44,13 @@ def check_if_plants_exist_bool(plant_name):
         #hwhat the he-hockey stick hockey stick am I doing!?!?!?
 
 
-def table_exists(engine,name):
+def table_exists(name):
     try:
         from sqlalchemy import inspect
         blarf = inspect(engine).dialect.has_table(engine.connect(),name)
-        print('[+] Database Table {} EXISTS'.format(name, blarf))
-        #return blarf
+
+        info_message('[+] Database Table {} EXISTS'.format(name))
+        return True
     except Exception:
         error_printer("[-] TABLE {} does NOT EXIST!".format(name))
 
