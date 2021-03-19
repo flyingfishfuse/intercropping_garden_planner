@@ -85,8 +85,8 @@ def error_printer(text):
     trace = traceback.TracebackException(exc_type, exc_value, exc_tb) 
     if LOGLEVEL == 'DEV_IS_DUMB':
         error_message( text + ''.join(trace.format_exception_only()))
-        bad_LOC = traceback.format_list(trace.extract_tb(trace)[-1:])[-1]
-        warning_message(bad_LOC)
+        #bad_LOC = traceback.format_list(trace.extract_tb(trace)[-1:])[-1]
+        #warning_message(bad_LOC)
         debug_message('LINE NUMBER >>>' + str(exc_tb.tb_lineno))
     else:
         error_message(text + ''.join(trace.format_exception_only()))
@@ -213,7 +213,7 @@ def add_plant_to_db(plant_to_add):
         PlantDatabase.session.commit
         #info_message('[+] Plant Added To Database : ' + plant_to_add.name)
     except Exception:
-        error_message("[-] add_plant_to_db() FAILED")
+        error_printer("[-] add_plant_to_db() FAILED")
 
 #########################################################
 ###         INITIALIZE DATABASE TABLES
@@ -254,31 +254,6 @@ def does_plant_exists(self,plant_name):
     except Exception:
         error_printer('[-] Database VERIFICATION FAILED!')
 
-def does_table_exist(self,name):
-    try:
-        blarf = inspect(engine).dialect.has_table(engine.connect(),name)
-        if blarf == True:
-            info_message('[+] Database Table {} EXISTS'.format(name))
-            return True
-        else:
-            warning_message("[-] TABLE {} does NOT EXIST!".format(name))
-            return False
-    except Exception:
-        error_printer('[-] Table Verification FAILED!')
-
-def is_db_populated():
-    try:
-        info_message('[+] Checking the Database Population')
-        for type_of_plant in ['Vegetables','Fruits','Herbs','Flowers','Other']:
-            list_of_type = PlantDatabase.session.query(Plants).filter_by(plant_type = type_of_plant).all()
-            if (list_of_type != None) or list_of_type > 0:
-                info_message('[+] Database has {} entries for {}'.format(len(list_of_type), list_of_type))
-                return True
-            else:
-                warning_message('[-] Database has no entries for {}'.format(list_of_type))
-                return False
-    except Exception:
-        error_printer('[-] Database Population Check FAILED!')
 
     #veggies = PlantDatabase.session.query(Plants).filter_by(plant_type = 'Vegetables').all()
     #fruits  = PlantDatabase.session.query(Plants).filter_by(plant_type = 'Fruits').all()
@@ -337,10 +312,41 @@ for field in coordinate_array:
 warning_message("WELCOME TO THE GRID")
 for each in grid_points:
     print(each)
+
+def does_table_exist(name):
+    try:
+        blarf = inspect(engine).dialect.has_table(engine.connect(),name)
+        if blarf == True:
+            info_message('[+] Database Table {} EXISTS'.format(name))
+            return True
+        else:
+            warning_message("[-] TABLE {} does NOT EXIST!".format(name))
+            return False
+    except Exception:
+        error_printer('[-] Table Verification FAILED!')
+
+def is_db_populated():
+    try:
+        info_message('[+] Checking the Database Population')
+        for type_of_plant in ['Vegetables','Fruits','Herbs','Flowers','Other']:
+            list_of_type = PlantDatabase.session.query(Plants).filter_by(plant_type = type_of_plant).all()
+            if len(list_of_type) > 0:
+                info_message('[+] Database has {} entries for {}'.format(len(list_of_type), type_of_plant))
+                db_is_populated = True        
+            else:
+                db_is_populated = False
+                warning_message('[-] Database has no entries for {}'.format(type_of_plant))
+        if db_is_populated:
+            warning_message('[+] Database is Populated')
+            return True
+        else:
+            warning_message('[-] Database is NOT Populated')
+            return False
+    except Exception:
+        error_printer('[-] Database Population Check FAILED!')
+
 try:
-    #if (os.path.exists('./database/plants_info.db') == False):
-    if not database_exists(LOCAL_CACHE_FILE) or \
-        does_table_exist("Plants") == False:
+    if not database_exists(LOCAL_CACHE_FILE) or does_table_exist("Plants") == False:
         try:
             PlantDatabase.create_all()
             PlantDatabase.session.commit()
