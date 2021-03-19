@@ -21,6 +21,7 @@ import logging
 import itertools
 import traceback
 from sqlalchemy import create_engine
+from sqlalchemy import inspect
 from sqlalchemy.pool import StaticPool
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy_utils import database_exists
@@ -79,15 +80,16 @@ warning_message  = lambda message: logger.warning(yellow_bold_print(message))
 error_message    = lambda message: logger.error(redprint(message)) 
 critical_message = lambda message: logger.critical(yellow_bold_print(message))
 
-def error_printer(message):
+def error_printer(text):
     exc_type, exc_value, exc_tb = sys.exc_info()
     trace = traceback.TracebackException(exc_type, exc_value, exc_tb) 
     if LOGLEVEL == 'DEV_IS_DUMB':
-        error_message( message + ''.join(trace.format_exception_only()))
-        traceback.format_list(trace.extract_tb(trace)[-1:])[-1]
+        error_message( text + ''.join(trace.format_exception_only()))
+        bad_LOC = traceback.format_list(trace.extract_tb(trace)[-1:])[-1]
+        warning_message(bad_LOC)
         debug_message('LINE NUMBER >>>' + str(exc_tb.tb_lineno))
     else:
-        error_message(message + ''.join(trace.format_exception_only()))
+        error_message(text + ''.join(trace.format_exception_only()))
 
 ################################################################################
 ##############                      CONFIG                     #################
@@ -211,7 +213,7 @@ def add_plant_to_db(plant_to_add):
         PlantDatabase.session.commit
         #info_message('[+] Plant Added To Database : ' + plant_to_add.name)
     except Exception:
-        error_message("[-] add_plant_to_db() FAILED \n")
+        error_message("[-] add_plant_to_db() FAILED")
 
 #########################################################
 ###         INITIALIZE DATABASE TABLES
@@ -239,7 +241,7 @@ test_plant = Plants(plant_type      = 'Tree',
                     )
 test_garden = Garden(name = 'home base',
                      hemisphere = 'south',
-                     zone = '7a',
+                     zone = '9a',
                      notes = 'bada-bing bada-boom, big badaboom'
                     )  
 def does_plant_exists(self,plant_name):
@@ -265,26 +267,31 @@ def does_table_exist(self,name):
         error_printer('[-] Table Verification FAILED!')
 
 def is_db_populated():
-    for each in ['Vegetables','Fruits', 'Fruit Trees','Herbs','Flowers','Other']
-    veggies = PlantDatabase.session.query(Plants).filter_by(plant_type = 'Vegetables').all()
-    fruits  = PlantDatabase.session.query(Plants).filter_by(plant_type = 'Fruits').all()
-    herbs   = PlantDatabase.session.query(Plants).filter_by(plant_type = 'Herbs').all()
+    try:
+        info_message('[+] Checking the Database Population')
+        for type_of_plant in ['Vegetables','Fruits','Herbs','Flowers','Other']:
+            list_of_type = PlantDatabase.session.query(Plants).filter_by(plant_type = type_of_plant).all()
+            if (list_of_type != None) or list_of_type > 0:
+                info_message('[+] Database has {} entries for {}'.format(len(list_of_type), list_of_type))
+                return True
+            else:
+                warning_message('[-] Database has no entries for {}'.format(list_of_type))
+                return False
+    except Exception:
+        error_printer('[-] Database Population Check FAILED!')
+
+    #veggies = PlantDatabase.session.query(Plants).filter_by(plant_type = 'Vegetables').all()
+    #fruits  = PlantDatabase.session.query(Plants).filter_by(plant_type = 'Fruits').all()
+    #herbs   = PlantDatabase.session.query(Plants).filter_by(plant_type = 'Herbs').all()
+    #flowers = PlantDatabase.session.query(Plants).filter_by(plant_type = 'Flowers').all()
+    #Other   = PlantDatabase.session.query(Plants).filter_by(plant_type = 'Other').all()
+    
+
 
 class ScrapeWikipediaTableForData:
     def __init__(self,sections_to_grab, thing_to_get):
         self.sections_to_grab = sections_to_grab
         self.thing_to_get     = thing_to_get
-
-    def does_table_exist(self,name):
-        try:
-            blarf = inspect(engine).dialect.has_table(engine.connect(),name)
-            if blarf == True:
-                info_message('[+] Database Table {} EXISTS'.format(name))
-                return True
-            else:
-                return False
-        except Exception:
-            error_printer("[-] TABLE {} does NOT EXIST!".format(name))
 
     def dothethingjulie(self):
         try:
@@ -339,24 +346,23 @@ try:
             PlantDatabase.session.commit()
             info_message("[+] Database Tables Created")
         except Exception:
-            error_printer("[-] Database Table Creation FAILED \n")
-    if database_exists(LOCAL_CACHE_FILE) and  \
-        does_table_exist("Plants") == True and\
-        
-
-        
+            error_printer("[-] Database Table Creation FAILED ")
+    elif is_db_populated() == False:
         try:            
             add_plant_to_db(test_plant)
-            add_plant_to_db(test_garden)
-            info_message("[+] Test Commit SUCESSFUL, Continuing!\n")
+            info_message("[+] Test Commit SUCESSFUL, Continuing!")
         except Exception:
-            error_printer("[-] Test Commit FAILED \n") 
-
+            error_printer("[-] Test Commit FAILED ")
+        info_message('[+] Attempting to Populate the Database')
         try:
             plant_data_lookup = ScrapeWikipediaTableForData(sections_to_grab,thing_to_get)
             plant_data_lookup.dothethingjulie()
         except Exception:
-            error_printer("[-] Database Table Creation FAILED \n")
+            error_printer("[-] Database Table Creation FAILED")
+    elif (database_exists(LOCAL_CACHE_FILE)) or  \
+        (does_table_exist("Plants") == True) and\
+        (is_db_populated() == True): 
+
     else:
         warning_message('[+] Database already exists, skipping creation')
 except Exception:
