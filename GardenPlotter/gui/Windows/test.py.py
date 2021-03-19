@@ -32,10 +32,6 @@ print(enumerate(list_of_all_cells))
 # 
 #>>> y axis index is grid_points[y_index]
 # [(0, 0), (1, 0), (2, 0), (3, 0), (4, 0)]
-def grab_xy_by_index(self, x , y):
-
-for cell_x_position ,cell_y_position in coordinate_array:
-    grid_points.append(itertools.zip_longest(cell_x_position,cell_y_position))
 
 #for (x_coord, y_coord) in coordinate_array:
 

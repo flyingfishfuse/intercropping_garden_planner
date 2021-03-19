@@ -62,7 +62,7 @@ try:
             PlantDatabase.session.commit()
             info_message("[+] Database Tables Created")
         except Exception:
-            error_printer("[-] Database Table Creation FAILED \n" + ''.join(tb.format_exception_only()))
+            error_printer("[-] Database Table Creation FAILED \n")
         try:            
             add_plant_to_db(test_plant)
             add_plant_to_db(test_garden)
@@ -74,7 +74,7 @@ try:
             plant_data_lookup = ScrapeWikipediaTableForData(sections_to_grab,thing_to_get)
             plant_data_lookup.dothethingjulie()
         except Exception:
-            error_printer("[-] Database Table Creation FAILED \n" + ''.join(tb.format_exception_only()))
+            error_printer("[-] Database Table Creation FAILED \n")
     else:
         warning_message('[+] Database already exists, skipping creation')
 except Exception:
