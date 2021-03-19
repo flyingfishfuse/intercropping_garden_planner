@@ -242,17 +242,36 @@ test_garden = Garden(name = 'home base',
                      zone = '7a',
                      notes = 'bada-bing bada-boom, big badaboom'
                     )  
-
+def does_plant_exists_bool(self,plant_name):
+    try:
+        if PlantDatabase.session.query(Plants.id).filter_by(name=plant_name).first() is not None:
+            info_message('[+] Plant {} Exists'.format(pl))
+            return True
+        else:
+            return False        
+    except Exception:
+        error_printer('[-] Database VERIFICATION FAILED!')
+def does_table_exist_bool(self,name):
+    try:
+        blarf = inspect(engine).dialect.has_table(engine.connect(),name)
+        if blarf == True:
+            info_message('[+] Database Table {} EXISTS'.format(name))
+            return True
+        else:
+            warning_message("[-] TABLE {} does NOT EXIST!".format(name)))
+            return False
+    except Exception:
+        error_printer('[-] Table Verification FAILED!')
 
 class ScrapeWikipediaTableForData:
     def __init__(self,sections_to_grab, thing_to_get):
         self.sections_to_grab = sections_to_grab
         self.thing_to_get     = thing_to_get
 
-    def does_plant_exists_bool(self,plant_name):
+    def is_db_filled(self,database_name:str):
         try:
-            if PlantDatabase.session.query(Plants.id).filter_by(name=plant_name).first() is not None:
-                info_message('[+] TABLE {} Exists'.format(pl))
+            if PlantDatabase.session.query(Plants):
+                info_message('[+] Plant {} Exists'.format(pl))
                 return True
             else:
                 return False        
@@ -262,10 +281,10 @@ class ScrapeWikipediaTableForData:
 
     def does_table_exist_bool(self,name):
         try:
-            #the "implied IF" is real
             blarf = inspect(engine).dialect.has_table(engine.connect(),name)
-            info_message('[+] Database Table {} EXISTS'.format(name))
-            return True
+            if blarf == True:
+                info_message('[+] Database Table {} EXISTS'.format(name))
+                return True
             else:
                 return False
         except Exception:
@@ -312,10 +331,38 @@ for field in coordinate_array:
         for each in thing:
             list_of_all_cells.append(each)
 
+warning_message("WELCOME TO THE GRID")
 for each in grid_points:
     print(each)
-print(list_of_all_cells)
-print(enumerate(list_of_all_cells))
+try:
+    #if (os.path.exists('./database/plants_info.db') == False):
+    if not database_exists(LOCAL_CACHE_FILE):
+        try:
+            PlantDatabase.create_all()
+            PlantDatabase.session.commit()
+            info_message("[+] Database Tables Created")
+        except Exception:
+            error_printer("[-] Database Table Creation FAILED \n")
+    if database_exists(LOCAL_CACHE_FILE) and  \
+        does_table_exist("Plants") == True and\
+        len(PlantDatabase.session.query('Plants')):    
+        
+        try:            
+            add_plant_to_db(test_plant)
+            add_plant_to_db(test_garden)
+            info_message("[+] Test Commit SUCESSFUL, Continuing!\n")
+        except Exception:
+            error_printer("[-] Test Commit FAILED \n") 
+
+        try:
+            plant_data_lookup = ScrapeWikipediaTableForData(sections_to_grab,thing_to_get)
+            plant_data_lookup.dothethingjulie()
+        except Exception:
+            error_printer("[-] Database Table Creation FAILED \n")
+    else:
+        warning_message('[+] Database already exists, skipping creation')
+except Exception:
+    error_printer("[-] Database existance Check FAILED")
 
 plant_data_lookup = ScrapeWikipediaTableForData(sections_to_grab,thing_to_get)
 plant_data_lookup.dothethingjulie()

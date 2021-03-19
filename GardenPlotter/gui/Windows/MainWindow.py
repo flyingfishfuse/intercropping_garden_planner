@@ -1,8 +1,4 @@
-#from tkinter import *
-#from tkinter import filedialog
-#import GardenPlotter.database.database_stuff
-#from GardenPlotter.database.database_stuff import *
-#from GardenPlotter.gui.Windows import *
+
 # Maximum and default grid size
 MAX_N, DEFAULT_N = 26, 10
 # The "default" plant for an unfilled grid cell
