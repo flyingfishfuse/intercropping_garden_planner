@@ -224,30 +224,28 @@ def add_plant_to_db(plant_to_add):
     """
     """
     try:
-        duplicate_check_query = PlantDatabase.session.query(Plants).filter_by(name=plant_to_add.name).scalar() is not None
-        if duplicate_check_query:
+        #static variable validation check
+            # plant_type is the only PlantDatabase.Model field 
+            # with defined/static strings.
+            # if it doesnt match an entry in the list, it will break the program
+        if plant_to_add.plant_type not in sections_to_grab:
+            warning_message('[-] WARNING; BAD DATA : {} not in the list of approved field names'.format(plant_to_add.plant_type))
+        # duplicate check
+        #if it returns True, its in the db 
+        elif PlantDatabase.session.query(Plants).filter_by(name=plant_to_add.name).scalar() is not None:
             info_message('[+] Duplicate Entry Avoided : ' + plant_to_add.name)
-        PlantDatabase.session.add(plant_to_add)
-        PlantDatabase.session.commit
-        #info_message('[+] Plant Added To Database : ' + plant_to_add.name)
+        # and doesnt get added
+        else: # and it does if it doesnt... which works out somehow ;p
+            info_message('[+] Plant Added To Database : ' + plant_to_add.name)
+            PlantDatabase.session.add(plant_to_add)
+
     except Exception:
         error_printer("[-] add_plant_to_db() FAILED")
 
 #########################################################
-###         INITIALIZE DATABASE TABLES
-#########################################################
-#try:
-#    PlantDatabase.create_all()
-#    PlantDatabase.session.commit()
-#except Exception:
-#    exc_type, exc_value, exc_tb = sys.exc_info()
-#    tb = traceback.TracebackException(exc_type, exc_value, exc_tb) 
-#    error_message("[-] Database Table Creation FAILED \n" + ''.join(tb.format_exception_only()))
-
-#########################################################
 ###                  TEST ENTRIES 
 #########################################################
-test_plant = Plants(plant_type      = 'Tree',
+test_plant = Plants(plant_type      = 'Fruit',
                     name            = 'fuck apple',
                     scientific_name = 'fruitus givafuckus',
                     helps           = 'thineself',
@@ -261,7 +259,9 @@ test_garden = Garden(name = 'home base',
                      hemisphere = 'south',
                      zone = '9a',
                      notes = 'bada-bing bada-boom, big badaboom'
-                    )  
+                    )
+
+
 def does_plant_exists(self,plant_name):
     try:
         if PlantDatabase.session.query(Plants.id).filter_by(name=plant_name).first() is not None:
@@ -296,7 +296,7 @@ class ScrapeWikipediaTableForData:
     def __init__(self,sections_to_grab, thing_to_get, local_or_remote = 'local'):
         self.sections_to_grab = sections_to_grab
         self.thing_to_get     = thing_to_get
-        archive_list     = [
+        self.archive_list     = [
                             './database/everipedia_cache.tar.gz',
                             './database/wikipedia_cache.tar.gz'
                             ]
@@ -419,12 +419,22 @@ def init_database():
     except Exception:
         error_printer("[-] Database Table Creation FAILED ")
 
+def format_sources_for_database(source = 'local'):
+    '''source on line 120'''
+    try:
+        if source == 'local':
+            plant_data_lookup = ScrapeWikipediaTableForData(sections_to_grab,thing_to_get = )
+            plant_data_lookup.extract_deep_storage
+            plant_data_lookup.dothethingjulie()
+    except Exception:
+        error_printer('[-] ')
 ################################################################################
 ##############                   Control loop                  #################
 ################################################################################
 try:
     #if DB or tables dont exist, create them
     if not database_exists(LOCAL_CACHE_FILE) or does_table_exist("Plants") == False:
+        init_database
 
     #######################################################################
     #function returns a boolean but also sets a semi-global bool            
@@ -450,8 +460,8 @@ try:
 except Exception:
     error_printer("[-] Database existance Check FAILED")
 
-plant_data_lookup = ScrapeWikipediaTableForData(sections_to_grab,thing_to_get)
-plant_data_lookup.dothethingjulie()
+
+
 #>>> for each in grid_points:
 #...     print(each)
 #  -------------------X-------------------- 
