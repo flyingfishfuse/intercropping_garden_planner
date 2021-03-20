@@ -4,6 +4,11 @@
 This file contains :
     - This is a monolithic test file for exploration in bpython
 
+    - this file will be stripped/abstracted/compiled/packaged
+
+    - you (me) will ab-so-fucking-lutely document the file that performs the conversion/packaging
+        so others can see how the development version turns into a final product
+
     - I think this is going to be the final monolith we feed
         to a compiler/packager for cross platform releases.
         The main assembly of code in multiple files is for development/openness
@@ -13,9 +18,15 @@ __author__  = 'Adam Galindo'
 __email__   = 'null@null.com'
 __version__ = '0.1A'
 __license__ = 'GPLv3'
+
+
+################################################################################
+##############                      imports                    #################
+################################################################################
 import os
 import sys
 import numpy
+import shutil
 import pandas
 import logging
 import itertools
@@ -38,6 +49,13 @@ try:
 except ImportError as derp:
     print("[-] NO COLOR PRINTING FUNCTIONS AVAILABLE, Install the Colorama Package from pip")
     COLORMEQUALIFIED = False
+################################################################################
+##############                      VARS                       #################
+################################################################################
+list_of_db_tables  = ['Vegetables','Fruits','Herbs','Flowers','Other']
+db_is_initialized  = bool
+db_is_populated    = bool
+test_commit_result = bool
 
 ##########################
 # Colorization Functions #
@@ -67,7 +85,7 @@ yellow_bold_print     = lambda text: print(Fore.YELLOW + Style.BRIGHT + \
 # LOGGING #
 ###########
 LOGLEVEL = 'DEV_IS_DUMB'
-LOGLEVELS = [1,2,3,'DEV_IS_DUMB']
+LOGLEVELS = [1,2,3,'DEV_IS_DUMB'] # critical defcon 1 level shit
 
 log_file  = 'garden_grid_message_log'
 logging.basicConfig(filename=log_file, format='%(asctime)s %(message)s', filemode='w')
@@ -264,10 +282,28 @@ def does_plant_exists(self,plant_name):
 
 
 class ScrapeWikipediaTableForData:
-    def __init__(self,sections_to_grab, thing_to_get):
+    '''
+    feed it :
+        local_or_remote = 'remote'
+
+    to fetch wikipedia article
+
+        local_or_remote = 'local'
+    
+    will unpack and read a tar.gz of the wikipedia page
+  
+    '''
+    def __init__(self,sections_to_grab, thing_to_get, local_or_remote = 'local'):
         self.sections_to_grab = sections_to_grab
         self.thing_to_get     = thing_to_get
+        archive_list     = [
+                            './database/everipedia_cache.tar.gz',
+                            './database/wikipedia_cache.tar.gz'
+                            ]
 
+    def extract_deep_storage(self, archives, extract_path = './database/workingdir'):
+            shutil.unpack_archive(archives, extract_path)
+    
     def dothethingjulie(self):
         try:
             self.dataframes = pandas.read_html(self.thing_to_get)
@@ -292,14 +328,32 @@ class ScrapeWikipediaTableForData:
                         add_plant_to_db(plant_entry)
         except Exception:
             error_printer("[-] WIKISCRAPER FAILED!")
+################################################################################
+##############         GRID CREATION - Warning : Dragons       #################
+################################################################################
+# so we are pretty much "simulating reality" with the creation of a grid 
+# representing a physical space with real items having thier own unique traits
 
+# the easiest way to program in OOP is to train your mind to see these 
+# things as physical objects with fiddly bits to tug on
+
+# define reality
+#places in the physical space
 grid_points = []
+#map of the physical space
 list_of_all_cells = []
+#size of the physical space
 grid_size_n = 5
+
+# set the limits of the physical space
 grid_x = range(grid_size_n)
 grid_y = range(grid_size_n)
+
+# assign meaning to the physical space in the form of a 2-d grid
 x_coordinates, y_coordinates = numpy.meshgrid(grid_x,grid_y,indexing='xy')
 coordinate_array = list(itertools.zip_longest(x_coordinates,y_coordinates))
+
+# map the physical space to an array in cartesian format
 for field in coordinate_array:
     x_field       = field[0]
     y_field       = field[1]
@@ -309,32 +363,44 @@ for field in coordinate_array:
         for each in thing:
             list_of_all_cells.append(each)
 
-warning_message("WELCOME TO THE GRID")
-for each in grid_points:
-    print(each)
+# present a text representation of the physical space
+# for your viewing displeasure
+if len(grid_points) > 10:
+    warning_message('[-] Grid too large to display properly in terminal')
+else:
+    warning_message("WELCOME TO THE GRID")
+    for each in grid_points:
+        print(each)
 
+################################################################################
+##############          database/ verification functions       #################
+################################################################################
 def does_table_exist(name):
     try:
         blarf = inspect(engine).dialect.has_table(engine.connect(),name)
         if blarf == True:
+            db_is_initialized = True 
             info_message('[+] Database Table {} EXISTS'.format(name))
             return True
         else:
             warning_message("[-] TABLE {} does NOT EXIST!".format(name))
+            db_is_initialized = False 
             return False
     except Exception:
         error_printer('[-] Table Verification FAILED!')
 
+
 def is_db_populated():
     try:
         info_message('[+] Checking the Database Population')
-        for type_of_plant in ['Vegetables','Fruits','Herbs','Flowers','Other']:
+        #checking table entries
+        for type_of_plant in list_of_db_tables:
             list_of_type = PlantDatabase.session.query(Plants).filter_by(plant_type = type_of_plant).all()
             if len(list_of_type) > 0:
                 info_message('[+] Database has {} entries for {}'.format(len(list_of_type), type_of_plant))
-                db_is_populated = True        
+                db_is_initialized = True        
             else:
-                db_is_populated = False
+                db_is_initialized = False
                 warning_message('[-] Database has no entries for {}'.format(type_of_plant))
         if db_is_populated:
             warning_message('[+] Database is Populated')
@@ -345,20 +411,32 @@ def is_db_populated():
     except Exception:
         error_printer('[-] Database Population Check FAILED!')
 
+def init_database():
+    try:
+        PlantDatabase.create_all()
+        PlantDatabase.session.commit()
+        info_message("[+] Database Tables Created")
+    except Exception:
+        error_printer("[-] Database Table Creation FAILED ")
+
+################################################################################
+##############                   Control loop                  #################
+################################################################################
 try:
+    #if DB or tables dont exist, create them
     if not database_exists(LOCAL_CACHE_FILE) or does_table_exist("Plants") == False:
-        try:
-            PlantDatabase.create_all()
-            PlantDatabase.session.commit()
-            info_message("[+] Database Tables Created")
-        except Exception:
-            error_printer("[-] Database Table Creation FAILED ")
+
+    #######################################################################
+    #function returns a boolean but also sets a semi-global bool            
     elif is_db_populated() == False:
-        try:            
+        try:
             add_plant_to_db(test_plant)
             info_message("[+] Test Commit SUCESSFUL, Continuing!")
         except Exception:
+            test_commit_result = False
             error_printer("[-] Test Commit FAILED ")
+    #######################################################################
+    # populates the DB by unzipping the tarball and reading the html
         info_message('[+] Attempting to Populate the Database')
         try:
             plant_data_lookup = ScrapeWikipediaTableForData(sections_to_grab,thing_to_get)

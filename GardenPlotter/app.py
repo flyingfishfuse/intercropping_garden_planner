@@ -108,7 +108,7 @@ try:
     else:
         warning_message('[+] Database already exists, skipping creation')
 except Exception:
-    error_printer("[-] Database existance Check FAILED")
+    error_printer("[-] Database existence Check FAILED")
 
 
 
